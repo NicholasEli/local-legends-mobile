@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { Link, useRouter } from 'expo-router';
 import {
   Alert,
@@ -57,6 +57,7 @@ export default function Details({ event, organization, user }) {
   const router = useRouter();
   const { width, height } = Dimensions.get('window');
 
+  const [subscribers, setSubscribers] = useState(event.subscribers);
   const [display_registration, setDisplayRegistration] = useState(false);
   const [registration, setRegistration] = useState({
     consentee_agreed: false,
@@ -74,7 +75,11 @@ export default function Details({ event, organization, user }) {
     }
 
     const subscribe_req = await set_event_subscription({ id: event._id, user_id: user._id });
-    console.log(subscribe_req);
+
+    const _subscribers = EJSON.clone({ ...subscribers });
+    _subscribers[user._id] = subscribe_req;
+
+    setSubscribers(_subscribers);
   };
 
   const register = async function () {
@@ -132,6 +137,8 @@ export default function Details({ event, organization, user }) {
       text2: 'Your registration has been sent'
     });
   };
+
+  useEffect(() => {}, [subscribers]);
 
   return (
     <>
@@ -234,39 +241,44 @@ export default function Details({ event, organization, user }) {
           padding: theme_variables.gap
         }}
       >
-        <View
-          style={{
-            ...button_styles({}),
-            backgroundColor: theme_variables.secondary
-          }}
-        >
-          <Pressable onPress={() => subscribe()} style={action_button_styles}>
-            {!user && (
-              <Fragment>
-                <Text style={button_text_styles({})}>Get Event Notifications</Text>
-                <MaterialIcons name="notifications" size={24} color="#ffffff" />
-              </Fragment>
-            )}
-
-            {user && (
-              <Fragment>
-                {!event.subscribers[user._id] && (
-                  <Fragment>
-                    <Text style={button_text_styles({})}>Get Event Notifications</Text>
-                    <MaterialIcons name="notifications" size={24} color="#ffffff" />
-                  </Fragment>
-                )}
-
-                {event.subscribers[user._id] && (
-                  <Fragment>
-                    <Text style={button_text_styles({})}>Stop Event Notifications</Text>
-                    <MaterialIcons name="notifications-active" size={24} color="#ffffff" />
-                  </Fragment>
-                )}
-              </Fragment>
-            )}
+        {!user && (
+          <Pressable
+            onPress={() => subscribe()}
+            style={{
+              ...button_styles({}),
+              ...action_button_styles,
+              backgroundColor: theme_variables.secondary
+            }}
+          >
+            <Text style={button_text_styles({})}>Get Event Notifications</Text>
+            <MaterialIcons name="notifications" size={24} color="#ffffff" />
           </Pressable>
-        </View>
+        )}
+
+        {user && !subscribers[user._id] && (
+          <Pressable
+            onPress={() => subscribe()}
+            style={{
+              ...button_styles({}),
+              ...action_button_styles,
+              backgroundColor: theme_variables.secondary
+            }}
+          >
+            <Text style={button_text_styles({})}>Get Event Notifications</Text>
+            <MaterialIcons name="notifications" size={24} color="#ffffff" />
+          </Pressable>
+        )}
+
+        {user && subscribers[user._id] && (
+          <Pressable
+            onPress={() => subscribe()}
+            style={{ ...button_styles({}), ...action_button_styles, backgroundColor: '#000000' }}
+          >
+            <Text style={button_text_styles({})}>Stop Event Notifications</Text>
+            <MaterialIcons name="notifications-active" size={24} color="#ffffff" />
+          </Pressable>
+        )}
+
         {event.address.street && event.address.state && event.address.city && (
           <Link
             href={`https://www.google.com/maps/search/?api=1&query=${event.address.street},+${event.address.state},+${event.address.city}+${event.address.postal_code}`}

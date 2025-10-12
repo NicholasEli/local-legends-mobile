@@ -6,7 +6,9 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
+import { Notifications } from 'react-native-notifications';
 import {
+  Alert,
   ActivityIndicator,
   Dimensions,
   Image,
@@ -35,6 +37,7 @@ import { get_athlete_vod_previews, get_purchased_vods } from '../../api/videos-o
 import { get_athlete_events } from '../../api/events.js';
 import { get_purchases } from '../../api/purchases.js';
 import { update_user } from '../../api/user.js';
+import { set_athlete_follow } from '../../api/athlete.js';
 import SPORTS from '../../types/SPORTS.js';
 import SEX from '../../types/SEX.js';
 import STANCE from '../../types/STANCE.js';
@@ -241,14 +244,28 @@ export default function Athlete() {
     }
 
     if (city) str += city;
-    if (state && country) {
-      str += ` ${state}, ${country}`;
-    } else {
-      if (state) str += ` ${state}`;
-      if (country) str += ` ${country}`;
-    }
+    if (state) str += ` ${state}`;
+    if (city && state) str += `, ${country}`;
 
     return str;
+  };
+
+  const follow = async function () {
+    console.clear();
+
+    if (!account) {
+      Alert.alert('Account Required', 'You must be logged in to follow this athlete', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Login/Sign Up', onPress: () => router.push('/signup') }
+      ]);
+      return;
+    }
+
+    const follow_req = await set_athlete_follow({ id: user._id, user_id: account._id });
+
+    const _user = EJSON.clone({ ...user });
+    _user.profile.followers[account._id] = follow_req;
+    setUser(_user);
   };
 
   const logout = async function () {
@@ -276,7 +293,21 @@ export default function Athlete() {
 
       if (token) {
         const req_account = await auth.user(token);
-        if (req_account?._id) setAccount(req_account);
+        if (req_account?._id) {
+          setAccount(req_account);
+
+          Notifications.events().registerRemoteNotificationsRegistered((event) => {
+            // Send this token to your Meteor backend
+            console.log('Device Token Received', event.deviceToken);
+          });
+
+          Notifications.events().registerNotificationReceivedForeground(
+            (notification, completion) => {
+              console.log('Notification received in foreground:', notification);
+              completion({ alert: true, sound: true, badge: false });
+            }
+          );
+        }
 
         const req_purchases = await get_purchases({ token });
 
@@ -384,33 +415,35 @@ export default function Athlete() {
             }}
           >
             <Text style={{ fontFamily: 'League-Gothic', color: '#ffffff', fontSize: 40 }}>
-              {firstname ? firstname : 'First Name'} {lastname ? lastname : 'Last Name'}
+              {firstname} {lastname}
             </Text>
           </View>
 
           {/* Location */}
-          <View
-            style={{
-              width,
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: theme_variables.gap / 2
-            }}
-          >
-            <Text
+          {location() && (
+            <View
               style={{
-                textTransform: 'uppercase',
-                fontFamily: 'League-Gothic',
-                color: '#ffffff',
-                fontSize: 20,
-                textAlign: 'center'
+                width,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: theme_variables.gap / 2
               }}
             >
-              {location()}
-            </Text>
-          </View>
+              <Text
+                style={{
+                  textTransform: 'uppercase',
+                  fontFamily: 'League-Gothic',
+                  color: '#ffffff',
+                  fontSize: 20,
+                  textAlign: 'center'
+                }}
+              >
+                {location()}
+              </Text>
+            </View>
+          )}
 
           {/* Socials */}
           <View
@@ -477,7 +510,7 @@ export default function Athlete() {
           )}
 
           {/* Actions */}
-          {/*!is_user && (
+          {!is_user && account && (
             <View
               style={{
                 width,
@@ -488,22 +521,47 @@ export default function Athlete() {
                 marginTop: theme_variables.gap
               }}
             >
-              <Pressable
-                style={{
-                  maxWidth: 160,
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  ...button_styles({})
-                }}
-                callback={() => null}
-              >
-                <Text style={action_button_styles}>Follow</Text>
-                <AntDesign name="plus" size={theme_variables.gap} color="#ffffff" />
-              </Pressable>
+              {!user.profile.followers[account._id] && (
+                <Pressable
+                  style={{
+                    maxWidth: 160,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    ...button_styles({})
+                  }}
+                  onPress={() => follow()}
+                >
+                  <Text style={action_button_styles}>Follow</Text>
+                  <AntDesign name="plus" size={theme_variables.gap} color="#ffffff" />
+                </Pressable>
+              )}
+
+              {user.profile.followers[account._id] && (
+                <Pressable
+                  style={{
+                    maxWidth: 160,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    ...button_styles({ backgroundColor: theme_variables.gray100 })
+                  }}
+                  onPress={() => follow()}
+                >
+                  <Text style={{ ...action_button_styles, color: theme_variables.gray600 }}>
+                    Following
+                  </Text>
+                  <AntDesign
+                    name="plus"
+                    size={theme_variables.gap}
+                    color={theme_variables.gray600}
+                  />
+                </Pressable>
+              )}
             </View>
-          )*/}
+          )}
 
           {/* Uplaod Sell Get Paid */}
           {is_user && user.profile.athlete && (
@@ -631,88 +689,90 @@ export default function Athlete() {
             {events.length <= 0 && <Scroller placeholders={placeholders({ num: 4 })} />}
           </View>
 
-          {/* Followers 
-          <View
-            style={{
-              width,
-              marginTop: theme_variables.gap * 2,
-              paddingLeft: theme_variables.gap,
-              paddingRight: theme_variables.gap
-            }}
-          >
-            <Text
-              style={{
-                marginBottom: theme_variables.gap,
-                fontSize: 32,
-                fontFamily: 'League-Gothic',
-                color: '#ffffff',
-                textTransform: 'uppercase'
-              }}
-            >
-              Followers
-            </Text>
-
+          {/* Followers */}
+          {followers && followers.length > 0 && (
             <View
               style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'flex',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: theme_variables.gap
+                width,
+                marginTop: theme_variables.gap * 2,
+                paddingLeft: theme_variables.gap,
+                paddingRight: theme_variables.gap
               }}
             >
-              {followers.map((follower, index) => {
-                const width = theme_variables.gap * 4;
-                const height = theme_variables.gap * 4;
-                let uri = theme_variables.logo;
+              <Text
+                style={{
+                  marginBottom: theme_variables.gap,
+                  fontSize: 32,
+                  fontFamily: 'League-Gothic',
+                  color: '#ffffff',
+                  textTransform: 'uppercase'
+                }}
+              >
+                Followers
+              </Text>
 
-                if (follower.profile.spectator || follower.profile.organization) {
-                  return <></>;
-                }
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: theme_variables.gap
+                }}
+              >
+                {followers.map((follower, index) => {
+                  const width = theme_variables.gap * 4;
+                  const height = theme_variables.gap * 4;
+                  let uri = theme_variables.logo;
 
-                if (follower.profile.avatar) {
-                  uri = follower.profile.avatar.url;
-                }
+                  if (follower.profile.spectator || follower.profile.organization) {
+                    return <></>;
+                  }
 
-                return (
-                  <Link
-                    key={index}
-                    href={`/athlete/${follower._id}`}
-                    style={{
-                      width,
-                      height,
-                      borderRadius: 100,
-                      borderWidth: 1,
-                      borderColor: theme_variables.primary,
-                      overflow: 'hidden'
-                    }}
-                  >
-                    <Image
-                      source={{ uri }}
+                  if (follower.profile.avatar) {
+                    uri = follower.profile.avatar.url;
+                  }
+
+                  return (
+                    <Link
+                      key={index}
+                      href={`/athlete/${follower._id}`}
                       style={{
                         width,
-                        height
+                        height,
+                        borderRadius: 100,
+                        borderWidth: 1,
+                        borderColor: theme_variables.primary,
+                        overflow: 'hidden'
                       }}
-                    />
-                  </Link>
-                );
-              })}
+                    >
+                      <Image
+                        source={{ uri }}
+                        style={{
+                          width,
+                          height
+                        }}
+                      />
+                    </Link>
+                  );
+                })}
 
-              {is_user && followers.length == 0 && (
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontFamily: 'League-Gothic',
-                    color: '#ffffff',
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  No followers yet
-                </Text>
-              )}
+                {is_user && followers.length == 0 && (
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontFamily: 'League-Gothic',
+                      color: '#ffffff',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    No followers yet
+                  </Text>
+                )}
+              </View>
             </View>
-          </View>*/}
+          )}
 
           {/* Logout */}
           {is_user && (

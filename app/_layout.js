@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { Slot } from 'expo-router';
 import { View, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { Notifications } from 'react-native-notifications';
 import Navigation from '../components/Navigation';
 import theme_variables from '../helpers/theme-variables.js';
 import { useFonts } from 'expo-font';
@@ -17,16 +16,6 @@ export default function Layout() {
 
   useEffect(() => {
     Meteor.connect('ws://localhost:3000/websocket');
-
-    Notifications.events().registerRemoteNotificationsRegistered((event) => {
-      // Send this token to your Meteor backend
-      console.log('Device Token Received', event.deviceToken);
-    });
-
-    Notifications.events().registerNotificationReceivedForeground((notification, completion) => {
-      console.log('Notification received in foreground:', notification);
-      completion({ alert: true, sound: true, badge: false });
-    });
   }, []);
 
   if (!fontsLoaded) {
