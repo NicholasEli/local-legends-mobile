@@ -56,7 +56,7 @@ export default function EventCard({ event, full_width = false }) {
 					)}
 				</View>
 				<Image
-					source={{ uri: event.banner.url }}
+					source={{ uri: event?.banner ? event.banner.url : theme_variables.banner }}
 					style={{
 						width: width_ratio,
 						height: width_ratio,

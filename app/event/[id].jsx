@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import EJSON from 'ejson';
 import Cover from './Cover.jsx';
 import Standings from './Standings.jsx';
 import Details from './Details.jsx';
@@ -11,32 +12,22 @@ import { get_auth_token } from '../../helpers/auth.js';
 import { get_event } from '../../api/event.js';
 import { get_organization } from '../../api/organization.js';
 
-const panels = [
-  {
-    id: 'cover',
-    label: 'Event'
-  },
-  {
-    id: 'standings',
-    label: 'Standings'
-  },
-  {
-    id: 'details',
-    label: 'Details'
-  }
-];
-
 export default function Event() {
   const params = useLocalSearchParams();
 
   const [user, setUser] = useState(null);
   const [event, setEvent] = useState(null);
   const [organization, setOrganization] = useState(null);
+  const [panels, setPanels] = useState([
+    {
+      id: 'cover',
+      label: 'Event'
+    }
+  ]);
   const [panel, setPanel] = useState(panels[0]);
 
   useEffect(() => {
     (async () => {
-      console.log('--mount');
       const req_event = await get_event({ id: params.id });
       setEvent(req_event);
 
@@ -44,6 +35,22 @@ export default function Event() {
         const req_organization = await get_organization({ id: req_event.organization_id });
         setOrganization(req_organization);
       }
+
+      const _panels = panels;
+
+      if (Object.keys(req_event.heats).length > 0) {
+        _panels.push({
+          id: 'standings',
+          label: 'Standings'
+        });
+      }
+
+      _panels.push({
+        id: 'details',
+        label: 'Details'
+      });
+
+      setPanels(_panels);
 
       const token = await get_auth_token();
       if (!token) return;

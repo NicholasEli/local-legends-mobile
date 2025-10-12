@@ -6,6 +6,8 @@
     "start": "clear && npx expo start -c",
     "android": "clear && expo run:android",
     "ios": "clear && npx react-native run-ios --simulator \"iPhone 16 Pro\" --verbose",
+    "ip": "ipconfig getifaddr en0",
+    "ios-device": "npx react-native start --host 192.168.0.200",
     "web": "clear && expo start --web"
   },
   "dependencies": {
@@ -38,12 +40,14 @@
     "react-native-element-dropdown": "^2.12.4",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-get-random-values": "^1.11.0",
+    "react-native-notifications": "^5.1.0",
     "react-native-reanimated": "^4.1.2",
     "react-native-reanimated-carousel": "^4.0.3",
     "react-native-render-html": "^6.3.4",
     "react-native-safe-area-context": "^5.6.1",
     "react-native-toast-message": "^2.3.3",
-    "react-native-worklets": "^0.5.1"
+    "react-native-worklets": "^0.5.1",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

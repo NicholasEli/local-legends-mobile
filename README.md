@@ -2,8 +2,8 @@
 
 ##### Immediate
 
-- VOD Card Update
-- VOD description render update
+- Event w/no heats
+- Event heat complete
 - Actual device test
 - App Store Assets
 

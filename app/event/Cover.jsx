@@ -138,7 +138,7 @@ export default function Cover({ event, organization }) {
                   pointerEvents: 'none'
                 }}
                 resizeMode="cover"
-                source={{ uri: event?.banner ? event.banner.url : theme_variables.banner }}
+                source={{ uri: event?.poster ? event.poster.url : theme_variables.banner }}
               />
             </Pressable>
           )}
@@ -295,7 +295,7 @@ export default function Cover({ event, organization }) {
       }}
     >
       <Image
-        source={{ uri: event.banner.url }}
+        source={{ uri: event?.poster ? event.poster.url : theme_variables.banner }}
         resizeMode="cover"
         style={{
           flex: 1,
@@ -306,7 +306,7 @@ export default function Cover({ event, organization }) {
         }}
       />
       <BlurView
-        intensity={8}
+        intensity={5}
         style={{
           width: '100%',
           height: '100%',
@@ -360,16 +360,28 @@ export default function Cover({ event, organization }) {
           </Text>
         )}
       </View>
-
-      <Sponsors
-        sponsors={[
-          {
-            url: 'https://locallegends.live/',
-            image: theme_variables.logo
-          },
-          ...event.sponsors
-        ]}
-      />
+      <BlurView
+        intensity={25}
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          zIndex: 2
+        }}
+      >
+        <Sponsors
+          sponsors={[
+            {
+              url: 'https://locallegends.live/',
+              image: theme_variables.logo_light
+            },
+            ...event.sponsors
+          ]}
+          borderColor={theme_variables.primary}
+          backgroundColor={theme_variables.secondary}
+          color="#ffffff"
+        />
+      </BlurView>
     </View>
   );
 }

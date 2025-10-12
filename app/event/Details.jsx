@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Link, useRouter } from 'expo-router';
 import {
   Alert,
@@ -15,9 +15,11 @@ import EJSON from 'ejson';
 import RenderHtml from 'react-native-render-html';
 import Toast from 'react-native-toast-message';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { set_event_registration } from '../../api/event-registration.js';
+import { set_event_subscription } from '../../api/event.js';
 import { get_auth_token } from '../../helpers/auth.js';
 import theme_variables from '../../helpers/theme-variables.js';
 import { button_styles, button_text_styles } from '../../helpers/button.js';
@@ -60,6 +62,20 @@ export default function Details({ event, organization, user }) {
     consentee_agreed: false,
     parental_approval: false
   });
+
+  const subscribe = async function () {
+    if (!user) {
+      Alert.alert('Account Required', 'You must be logged in to subscribe', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Login/Sign Up', onPress: () => router.push('/signup') }
+      ]);
+
+      return;
+    }
+
+    const subscribe_req = await set_event_subscription({ id: event._id, user_id: user._id });
+    console.log(subscribe_req);
+  };
 
   const register = async function () {
     if (!user) {
@@ -218,6 +234,39 @@ export default function Details({ event, organization, user }) {
           padding: theme_variables.gap
         }}
       >
+        <View
+          style={{
+            ...button_styles({}),
+            backgroundColor: theme_variables.secondary
+          }}
+        >
+          <Pressable onPress={() => subscribe()} style={action_button_styles}>
+            {!user && (
+              <Fragment>
+                <Text style={button_text_styles({})}>Get Event Notifications</Text>
+                <MaterialIcons name="notifications" size={24} color="#ffffff" />
+              </Fragment>
+            )}
+
+            {user && (
+              <Fragment>
+                {!event.subscribers[user._id] && (
+                  <Fragment>
+                    <Text style={button_text_styles({})}>Get Event Notifications</Text>
+                    <MaterialIcons name="notifications" size={24} color="#ffffff" />
+                  </Fragment>
+                )}
+
+                {event.subscribers[user._id] && (
+                  <Fragment>
+                    <Text style={button_text_styles({})}>Stop Event Notifications</Text>
+                    <MaterialIcons name="notifications-active" size={24} color="#ffffff" />
+                  </Fragment>
+                )}
+              </Fragment>
+            )}
+          </Pressable>
+        </View>
         {event.address.street && event.address.state && event.address.city && (
           <Link
             href={`https://www.google.com/maps/search/?api=1&query=${event.address.street},+${event.address.state},+${event.address.city}+${event.address.postal_code}`}
