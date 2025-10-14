@@ -1,5 +1,6 @@
 import { Link } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { Dimensions, Image, Text, View } from 'react-native';
 import CardTag from '../../components/CardTag.jsx';
 import theme_variables from '../../helpers/theme-variables.js';
@@ -12,18 +13,19 @@ export default function EventCard({ event, full_width = false }) {
 	if (full_width) width_ratio = width - theme_variables.gap * 2;
 
 	const text_styles = {
-		fontFamily: 'League-Gothic-Condensed',
-		fontSize: 28,
-		lineHeight: 28,
-		color: theme_variables.secondary,
+		maxWidth: '90%',
+		fontFamily: 'League-Gothic',
+		fontSize: 20,
+		lineHeight: 20,
+		color: '#fff',
 		textTransform: 'uppercase'
 	};
 
 	const date_styles = {
 		fontFamily: 'League-Gothic',
-		color: '#000000',
 		textTransform: 'uppercase',
-		textAlign: 'center'
+		textAlign: 'center',
+		color: '#fff'
 	};
 
 	if (!event) return <></>;
@@ -33,90 +35,104 @@ export default function EventCard({ event, full_width = false }) {
 			href={`/event/${event._id}`}
 			style={{
 				width: width_ratio,
-				position: 'relative',
-				overflow: 'hidden',
-				borderRadius: 20,
-				backgroundColor: '#ffffff',
-				borderColor: '#ffffff',
-				borderWidth: 2
+				backgroundColor: theme_variables.secondary,
+				borderRadius: theme_variables.border_radius,
+				...theme_variables.box_shadow
 			}}
 		>
-			<View>
-				<View
-					style={{
-						position: 'absolute',
-						top: theme_variables.gap,
-						right: theme_variables.gap / 2,
-						zIndex: 3
-					}}
-				>
-					{event.stream.playing && <CardTag text="Live Stream" />}
-					{!event.stream.playing && event.athletes.length > 0 && (
-						<CardTag text="Live Results" backgroundColor={theme_variables.secondary} />
-					)}
-				</View>
-				<Image
-					source={{ uri: event?.banner ? event.banner.url : theme_variables.banner }}
-					style={{
-						width: width_ratio,
-						height: width_ratio,
-						position: 'relative',
-						zIndex: 1
-					}}
-				/>
-			</View>
 			<View
 				style={{
-					width: width_ratio,
-					height: 96,
+					width: '100%',
+					height: '100%',
 					position: 'relative',
-					display: 'flex',
-					justifyContent: 'center',
-					paddingLeft: theme_variables.gap,
-					paddingRight: theme_variables.gap
+					overflow: 'hidden',
+					borderRadius: theme_variables.border_radius
 				}}
 			>
-				<Text style={text_styles}>{event.name}</Text>
-				<Text
-					style={{
-						...text_styles,
-						fontSize: 10,
-						lineHeight: 10,
-						color: theme_variables.gray900,
-						fontFamily: 'inherit'
-					}}
-				>
-					{event.address.city} {event.address.state}
-				</Text>
 				<View
 					style={{
-						maxWidth: 120,
+						width: '100%',
+						height: width_ratio,
+						overflow: 'hidden'
+					}}
+				>
+					<Image
+						resizeMode="cover"
+						source={{ uri: event?.poster ? event.poster.url : theme_variables.banner }}
+						style={{
+							width: '100%',
+							height: '100%'
+						}}
+					/>
+				</View>
+				<BlurView
+					intensity={2}
+					style={{
+						width: width_ratio - theme_variables.gap,
 						position: 'absolute',
-						top: theme_variables.gap / 2,
-						right: theme_variables.gap / 2,
-						zIndex: 2
+						bottom: theme_variables.gap,
+						left: theme_variables.gap / 2,
+						padding: theme_variables.gap / 2,
+						backgroundColor: 'rgba(255, 255, 255, 0.5)',
+						borderRadius: theme_variables.border_radius
 					}}
 				>
 					<Text
 						style={{
-							...date_styles,
-							fontSize: 64,
-							lineHeight: 64
+							...text_styles,
+							fontSize: 10,
+							lineHeight: 15,
+							fontFamily: 'inherit'
 						}}
 					>
-						{dayjs(event.date.start).format('DD')}
+						{event.sport}
+					</Text>
+					<Text style={{ ...text_styles, marginTop: 2 }} numberOfLines={1}>
+						{event.name}
 					</Text>
 					<Text
 						style={{
-							...date_styles,
-							marginTop: -8,
-							fontSize: 24,
-							lineHeight: 24
+							...text_styles,
+							fontSize: 10,
+							lineHeight: 10,
+							fontFamily: 'inherit'
 						}}
 					>
-						{dayjs(event.date.start).format('MMM')}
+						{event.address.city} {event.address.state}
 					</Text>
-				</View>
+					<View
+						style={{
+							maxWidth: 120,
+							position: 'absolute',
+							top: '25%',
+							right: theme_variables.gap,
+							zIndex: 2,
+							borderBottomLeftRadius: theme_variables.gap,
+							borderBottomRightRadius: theme_variables.gap,
+							overflow: 'hidden'
+						}}
+					>
+						<Text
+							style={{
+								...date_styles,
+								fontSize: 40,
+								lineHeight: 40
+							}}
+						>
+							{dayjs(event.date.start).format('DD')}
+						</Text>
+						<Text
+							style={{
+								...date_styles,
+								marginTop: -8,
+								fontSize: 20,
+								lineHeight: 20
+							}}
+						>
+							{dayjs(event.date.start).format('MMM')}
+						</Text>
+					</View>
+				</BlurView>
 			</View>
 		</Link>
 	);

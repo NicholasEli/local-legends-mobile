@@ -7,21 +7,33 @@ import AthleteCard from '../components/Card/Athlete.js';
 import PlaceholderCard from '../components/Card/Placeholder.js';
 import theme_variables from '../helpers/theme-variables.js';
 
-export default function Scroller({ title, events, vods, athletes, placeholders, owned, color }) {
+export default function Scroller({
+	title,
+	events,
+	vods,
+	athletes,
+	placeholders,
+	owned,
+	marginTop = theme_variables.gap / 2,
+	color
+}) {
 	const { width, height } = Dimensions.get('window');
 	const ratio = width * theme_variables.ratio_16_9;
 
 	const container_styles = {
 		width,
-		marginTop: theme_variables.gap * 2,
-		position: 'relative',
-		overflow: 'hidden'
+		marginTop,
+		paddingLeft: theme_variables.gap,
+		position: 'relative'
 	};
 
-	if (!events && !athletes) container_styles.height = ratio;
+	const card_styles = {
+		marginTop: theme_variables.gap,
+		marginBottom: theme_variables.gap
+	};
 
 	const text_styles = {
-		marginLeft: theme_variables.gap,
+		marginBottom: theme_variables.gap / 2,
 		fontFamily: 'League-Gothic-Condensed',
 		fontSize: 36,
 		lineHeight: 36,
@@ -49,7 +61,13 @@ export default function Scroller({ title, events, vods, athletes, placeholders, 
 
 				{vods &&
 					vods.map((vod, index) => (
-						<View key={index} style={{ marginLeft: index > 0 ? theme_variables.gap : 0 }}>
+						<View
+							key={index}
+							style={{
+								...card_styles,
+								marginLeft: index > 0 ? theme_variables.gap : 0
+							}}
+						>
 							<VODCard vod={vod} owned={owned} color={color} />
 						</View>
 					))}
@@ -63,13 +81,20 @@ export default function Scroller({ title, events, vods, athletes, placeholders, 
 
 				{placeholders &&
 					placeholders.map((event, index) => (
-						<View key={index} style={{ marginLeft: index > 0 ? theme_variables.gap : 0 }}>
+						<View
+							key={index}
+							style={{
+								...card_styles,
+								marginLeft: index > 0 ? theme_variables.gap : 0
+							}}
+						>
 							<PlaceholderCard color={color} />
 						</View>
 					))}
 				{obj.length > 1 && (
 					<View
 						style={{
+							...card_styles,
 							width: theme_variables.gap * 2,
 							height: '100%'
 						}}

@@ -1,13 +1,18 @@
 const theme_variables = {
 	gap: 16,
 	ratio_16_9: 0.5625,
-	border_radius: 10,
+	border_radius: 8,
 	blue100: '#e0e9f5',
+	blue200: '#262a34',
 	blue700: '#001c39',
+	blue800: '#1d1d29',
+	blue900: '#11121e',
 	gray100: '#f5f5f5',
 	gray200: '#e5e5e5',
+	gray300: '#333333',
 	gray400: '#18181b',
 	gray600: '#2d2e32',
+	gray650: '#666666',
 	gray900: '#999',
 	green300: '#32d296',
 	green500: '#2ecc71',
@@ -17,7 +22,7 @@ const theme_variables = {
 	stripe: '#635bff',
 	// color names
 	primary: '#c12841',
-	secondary: '#001c39',
+	secondary: '#11121e',
 	// font
 	gothic: 'League-Gothic',
 	gothic_italic: 'LeagueGothic-Italic',
@@ -72,6 +77,12 @@ const theme_variables = {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center'
+	},
+	box_shadow: {
+		shadowColor: '#000',
+		shadowOffset: { width: 1, height: 3 },
+		shadowOpacity: 0.75,
+		shadowRadius: 3
 	}
 };
 

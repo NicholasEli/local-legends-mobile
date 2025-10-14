@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ScrollView, View } from 'react-native';
 import Banner from '../components/Banner.js';
 import Scroller from '../components/Scroller.js';
@@ -39,22 +40,33 @@ export default function Home() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Banner
-        title="Local Legends Live"
-        subtitle="Amateur Action Sports"
-        uri="https://locallegends.live/home/banner/vod.jpg"
-      />
-      <ScrollView
-        style={{
-          marginBottom: theme_variables.gap,
-          paddingLeft: theme_variables.gap,
-          borderTopWidth: 2,
-          borderTopColor: theme_variables.primary
-        }}
-      >
-        <Scroller title="Athletes" athletes={athletes} />
-        <Scroller title="Videos On Demand" vods={vods} user={user} />
-        <Scroller title="Events" events={events} />
+      <View style={{ marginBottom: theme_variables.gap }}>
+        <Scroller athletes={athletes} marginTop={theme_variables.gap * 2.5} />
+      </View>
+      <ScrollView>
+        <Banner
+          href="https://locallegends.live"
+          title="Local Legends Live"
+          subtitle="Amateur Action Sports"
+          uri="https://locallegends.live/home/banner/vod.jpg"
+        />
+
+        <Scroller
+          vods={[
+            ...vods,
+            {
+              title: 'Upload. Share. Grow',
+              text: 'Local Legends Live Network',
+              href: 'https://locallegends.live/creator-program',
+              banner: {
+                url: 'https://locallegendslive.b-cdn.net/card-vod.jpg'
+              }
+            }
+          ]}
+          user={user}
+        />
+        <Scroller events={events} marginTop={theme_variables.gap} />
+        <View style={{ width: '100%', height: theme_variables.gap * 4 }} />
       </ScrollView>
     </View>
   );

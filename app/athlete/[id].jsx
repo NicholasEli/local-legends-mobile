@@ -6,13 +6,14 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
-import { Notifications } from 'react-native-notifications';
+import * as Notifications from 'expo-notifications';
 import {
-  Alert,
   ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -43,6 +44,15 @@ import SEX from '../../types/SEX.js';
 import STANCE from '../../types/STANCE.js';
 import SOCIALS from '../../types/SOCIALS.js';
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true
+  })
+});
+
 export default function Athlete() {
   const router = useRouter();
   const { width, height } = Dimensions.get('window');
@@ -64,9 +74,9 @@ export default function Athlete() {
     height: avatar_width,
     borderRadius: 100,
     borderColor: '#fff',
-    borderWidth: 1,
+    borderWidth: 2,
     overflow: 'hidden',
-    backgroundColor: '#ffffff'
+    backgroundColor: '#000'
   };
 
   const avatar_img_styles = {
@@ -273,6 +283,36 @@ export default function Athlete() {
     router.push('/');
   };
 
+  const request_push_notification_permission = async () => {
+    console.clear();
+    const tokenListener = Notifications.addPushTokenListener((token) => {
+      console.log('Device Push Token Listener:', token.data);
+    });
+
+    // Ask for permissions
+    console.log('Ask Permissions');
+    const { status: exiting_status } = await Notifications.getPermissionsAsync();
+    let final_status = exiting_status;
+
+    console.log('exiting_status');
+    if (exiting_status !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      final_status = status;
+    }
+
+    console.log('final_status');
+    if (final_status !== 'granted') {
+      console.log('Push notification permission denied');
+      return;
+    }
+    console.log('token');
+    // Get the Expo push token
+    const token = await Notifications.getDevicePushTokenAsync();
+    console.log('Device Push Token:', token);
+
+    // Optionally send the token to your server here
+  };
+
   useEffect(() => {
     (async () => {
       const req_user = await get_athlete({ id: params.id });
@@ -295,18 +335,7 @@ export default function Athlete() {
         const req_account = await auth.user(token);
         if (req_account?._id) {
           setAccount(req_account);
-
-          Notifications.events().registerRemoteNotificationsRegistered((event) => {
-            // Send this token to your Meteor backend
-            console.log('Device Token Received', event.deviceToken);
-          });
-
-          Notifications.events().registerNotificationReceivedForeground(
-            (notification, completion) => {
-              console.log('Notification received in foreground:', notification);
-              completion({ alert: true, sound: true, badge: false });
-            }
-          );
+          request_push_notification_permission();
         }
 
         const req_purchases = await get_purchases({ token });
@@ -354,12 +383,31 @@ export default function Athlete() {
             backgroundColor: 'rgba(255, 255, 255, 0.25)'
           }}
         >
-          <ActivityIndicator size="large" color={theme_variables.primary} />
+          <ActivityIndicator size="large" color="#fff" />
         </BlurView>
       )}
       <ScrollView style={{ flex: 1 }}>
         <Pressable style={{ position: 'relative ' }} onPress={() => set_image('banner')}>
-          <Banner uri={user.profile.athlete?.banner?.url} />
+          <View
+            style={{
+              backgroundColor: '#000',
+              borderBottomWidth: 2,
+              borderColor: '#fff'
+            }}
+          >
+            <Banner
+              uri={
+                user.profile.athlete?.banner?.url
+                  ? user.profile.athlete.banner.url
+                  : theme_variables.banner
+              }
+              styles={{
+                width: '100%',
+                borderRadius: 0
+              }}
+              linear_gradient={false}
+            />
+          </View>
           {is_user && (
             <View
               style={{
@@ -462,11 +510,7 @@ export default function Athlete() {
               if (url && social == 'website') {
                 return (
                   <Link key={index} href={url}>
-                    <MaterialCommunityIcons
-                      name="web"
-                      size={size}
-                      color={theme_variables.primary}
-                    />
+                    <MaterialCommunityIcons name="web" size={size} color="#fff" />
                   </Link>
                 );
               }
@@ -474,7 +518,7 @@ export default function Athlete() {
               if (url && social == 'x') {
                 return (
                   <Link key={index} href={url}>
-                    <FontAwesome5 name="twitter" size={size} color={theme_variables.primary} />
+                    <FontAwesome5 name="twitter" size={size} color="#fff" />
                   </Link>
                 );
               }
@@ -482,7 +526,7 @@ export default function Athlete() {
               if (url) {
                 return (
                   <Link key={index} href={url}>
-                    <FontAwesome5 name={social} size={size} color={theme_variables.primary} />
+                    <FontAwesome5 name={social} size={size} color="#fff" />
                   </Link>
                 );
               }
@@ -591,16 +635,19 @@ export default function Athlete() {
                 >
                   Upload. Share. Grow.
                 </Text>
-                <Text
-                  style={{
-                    color: '#ffffff',
-                    fontSize: 14,
-                    lineHeight: 20
-                  }}
-                >
-                  Upload and share your video content across the Local Legends network. To manage
-                  your creator account and publishing tools, please visit our website.
-                </Text>
+                {console.log(user)}
+                {!user.stripe_account_id && (
+                  <Text
+                    style={{
+                      color: '#ffffff',
+                      fontSize: 14,
+                      lineHeight: 20
+                    }}
+                  >
+                    Upload and share your video content across the Local Legends network. To manage
+                    your creator account and publishing tools, please visit our website.
+                  </Text>
+                )}
                 <Link
                   href="https://locallegends.live/login"
                   style={{
@@ -619,7 +666,12 @@ export default function Athlete() {
                       alignItems: 'center'
                     }}
                   >
-                    <Text style={{ ...button_text_styles({}) }}>Get Started</Text>
+                    {!user.stripe_account_id && (
+                      <Text style={{ ...button_text_styles({}) }}>Get Started</Text>
+                    )}
+                    {user.stripe_account_id && (
+                      <Text style={{ ...button_text_styles({}) }}>Upload Content</Text>
+                    )}
                   </View>
                 </Link>
               </View>
