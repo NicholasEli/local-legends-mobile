@@ -140,6 +140,22 @@ export default function Details({ event, organization, user }) {
     });
   };
 
+  const score_definition = function () {
+    if (event.judges.length > 0) {
+      if (event.enabled.highest_score) {
+        return `Score is based on highest judge score amongst any ${event.labels.run}`;
+      }
+
+      return `Score is based on average judge score for each ${event.labels.run}`;
+    }
+
+    if (event.enabled.highest_score) {
+      return `Score is based on highest ${event.labels.run} score`;
+    }
+
+    return `Score is based on average ${event.labels.run} score`;
+  };
+
   useEffect(() => {}, [subscribers]);
 
   return (
@@ -195,6 +211,16 @@ export default function Details({ event, organization, user }) {
             </Text>
           )}
 
+          <Text
+            style={{
+              marginTop: theme_variables.gap,
+              color: '#fff',
+              fontSize: 12
+            }}
+          >
+            {score_definition()}
+          </Text>
+
           {event.description && (
             <View style={{ marginTop: theme_variables.gap }}>
               <RenderHtml
@@ -226,8 +252,8 @@ export default function Details({ event, organization, user }) {
                     ...title_styles,
                     fontSize: 20
                   },
-                  p: { color: '#fff' },
-                  li: { color: '#fff' }
+                  p: { fontSize: 12, color: '#fff' },
+                  li: { fontSize: 12, color: '#fff' }
                 }}
               />
             </View>
