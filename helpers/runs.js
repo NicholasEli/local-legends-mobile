@@ -70,8 +70,24 @@ export const sort_runs = function (event, runs = []) {
 
 	if (event.judges.length > 0 && event.enabled.highest_score) {
 		runs.sort((a, b) => {
-			const A = Math.max(...a.runs.map((run) => parseFloat(run.score)));
-			const B = Math.max(...b.runs.map((run) => parseFloat(run.score)));
+			let A = 0;
+			let B = 0;
+
+			a.runs.forEach((run) => {
+				for (const judge_key in run.judges) {
+					const judge = run.judges[judge_key];
+					const judge_score = parseFloat(judge.score);
+					if (judge_score > A) A = judge_score;
+				}
+			});
+
+			b.runs.forEach((run) => {
+				for (const judge_key in run.judges) {
+					const judge = run.judges[judge_key];
+					const judge_score = parseFloat(judge.score);
+					if (judge_score > B) B = judge_score;
+				}
+			});
 
 			if (A > B) return -1;
 			if (A < B) return 1;
