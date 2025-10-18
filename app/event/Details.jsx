@@ -29,12 +29,12 @@ import dayjs from 'dayjs';
 
 const title_styles = {
   fontWeight: 700,
-  color: theme_variables.primary,
+  color: '#fff',
   textTransform: 'uppercase'
 };
 
 const date_styles = {
-  color: theme_variables.gray900,
+  color: '#fff',
   fontSize: 20,
   fontFamily: theme_variables.gothic,
   textTransform: 'uppercase'
@@ -67,7 +67,6 @@ export default function Details({ event, organization, user }) {
   });
 
   const subscribe = async function () {
-    console.log('sdf');
     if (!user) {
       Alert.alert('Account Required', 'You must be logged in to subscribe', [
         { text: 'Cancel', style: 'cancel' },
@@ -76,7 +75,7 @@ export default function Details({ event, organization, user }) {
 
       return;
     }
-    console.log('adsf');
+
     const subscribe_req = await set_event_subscription({ id: event._id, user_id: user._id });
 
     const _subscribers = EJSON.clone({ ...subscribers });
@@ -145,7 +144,7 @@ export default function Details({ event, organization, user }) {
 
   return (
     <>
-      <View style={{ zIndex: 10 }}>
+      <View style={{ zIndex: 10, marginTop: theme_variables.gap * 3 }}>
         <Toast />
       </View>
       <View
@@ -157,7 +156,7 @@ export default function Details({ event, organization, user }) {
         <ScrollView>
           <Text
             style={{
-              color: theme_variables.primary,
+              color: '#fff',
               fontSize: 30,
               fontFamily: theme_variables.gothic,
               textTransform: 'uppercase'
@@ -186,7 +185,7 @@ export default function Details({ event, organization, user }) {
           {event.sport && (
             <Text
               style={{
-                color: theme_variables.gray900,
+                color: '#fff',
                 fontSize: 15,
                 fontFamily: theme_variables.gothic,
                 textTransform: 'uppercase'
@@ -202,7 +201,7 @@ export default function Details({ event, organization, user }) {
                 contentWidth={width}
                 source={{ html: event.description }}
                 tagsStyles={{
-                  body: { color: theme_variables.gray900 },
+                  body: { color: '#fff' },
                   h1: {
                     ...title_styles,
                     fontSize: 25
@@ -227,8 +226,8 @@ export default function Details({ event, organization, user }) {
                     ...title_styles,
                     fontSize: 20
                   },
-                  p: { color: theme_variables.gray900 },
-                  li: { color: theme_variables.gray900 }
+                  p: { color: '#fff' },
+                  li: { color: '#fff' }
                 }}
               />
             </View>

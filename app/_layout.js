@@ -31,8 +31,14 @@ export default function Layout() {
   const Background = function () {
     return (
       <LinearGradient
-        colors={['#000', theme_variables.secondary, theme_variables.primary]}
-        start={{ x: 0, y: 0 }}
+        colors={[
+          '#000',
+          theme_variables.secondary,
+          theme_variables.primary,
+          theme_variables.secondary,
+          '#000'
+        ]}
+        start={{ x: 0, y: 0.15 }}
         end={{ x: 0, y: 1 }}
         style={{
           width,

@@ -9,7 +9,7 @@ export default function AthleteCard({ user }) {
 
 	return (
 		<Link
-			href={`/athlete/${user._id}`}
+			href={user.href ? user.href : `/athlete/${user._id}`}
 			style={{
 				width: theme_variables.gap * 4,
 				height: theme_variables.gap * 4,

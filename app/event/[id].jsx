@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { Dimensions, View, Text, Pressable } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { useLocalSearchParams } from 'expo-router';
 import EJSON from 'ejson';
 import Cover from './Cover.jsx';
@@ -7,12 +8,14 @@ import Standings from './Standings.jsx';
 import Details from './Details.jsx';
 import Chat from './Chat.jsx';
 import auth from '../../api/auth.js';
-import theme_variables from '../../helpers/theme-variables.js';
-import { get_auth_token } from '../../helpers/auth.js';
 import { get_event } from '../../api/event.js';
 import { get_organization } from '../../api/organization.js';
+import theme_variables from '../../helpers/theme-variables.js';
+import { get_auth_token } from '../../helpers/auth.js';
+import { hex_to_rgb } from '../../helpers/utils.js';
 
 export default function Event() {
+  const { width, height } = Dimensions.get('window');
   const params = useLocalSearchParams();
 
   const [user, setUser] = useState(null);
@@ -24,7 +27,81 @@ export default function Event() {
       label: 'Event'
     }
   ]);
+
   const [panel, setPanel] = useState(panels[0]);
+
+  /** UI **/
+  const PanelNavigation = function () {
+    return (
+      <View
+        style={{
+          width: width - theme_variables.gap,
+          position: 'absolute',
+          top: theme_variables.gap,
+          left: theme_variables.gap / 2,
+          zIndex: 5,
+          gap: theme_variables.gap,
+          ...theme_variables.flex_center
+        }}
+      >
+        {panels.map((tab, index) => {
+          return (
+            <Pressable
+              key={tab.id}
+              onPress={() => setPanel(tab)}
+              style={{
+                flex: 1
+              }}
+            >
+              <BlurView
+                intensity={10}
+                style={{
+                  height: 32,
+                  borderRadius: 100,
+                  backgroundColor:
+                    panel.id == tab.id
+                      ? hex_to_rgb(theme_variables.primary, 0.75)
+                      : 'rgba(0, 0, 0, 0.5)',
+                  borderWidth: 1,
+                  borderColor: theme_variables.primary,
+                  overflow: 'hidden',
+                  ...theme_variables.flex_center
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: theme_variables.gothic,
+                    textTransform: 'uppercase',
+                    fontSize: 16,
+                    letterSpacing: 1,
+                    color: '#fff'
+                  }}
+                >
+                  {tab.label}
+                </Text>
+              </BlurView>
+            </Pressable>
+          );
+        })}
+      </View>
+    );
+  };
+
+  const Panels = function () {
+    return (
+      <View
+        style={{
+          flex: 1
+        }}
+      >
+        {panel?.id == 'cover' && <Cover event={event} organization={organization} user={user} />}
+        {panel?.id == 'standings' && <Standings event={event} user={user} />}
+        {panel?.id == 'details' && (
+          <Details event={event} organization={organization} user={user} />
+        )}
+      </View>
+    );
+  };
 
   useEffect(() => {
     (async () => {
@@ -65,64 +142,9 @@ export default function Event() {
   if (!event) return <></>;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
-      <View
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          backgroundColor: '#ffffff',
-          borderColor: theme_variables.primary,
-          borderBottomWidth: 2
-        }}
-      >
-        {panels.map((tab, index) => {
-          return (
-            <Pressable
-              key={tab.id}
-              style={{
-                flex: 1
-              }}
-              onPress={() => setPanel(tab)}
-            >
-              <View
-                style={{
-                  height: 40,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderColor: index > 0 ? theme_variables.primary : 'transparent',
-                  borderLeftWidth: 1,
-                  backgroundColor: panel.id == tab.id ? theme_variables.primary : 'transparent'
-                }}
-              >
-                <Text
-                  style={{
-                    color: panel.id == tab.id ? '#ffffff' : theme_variables.gray400,
-                    fontFamily: theme_variables.gothic,
-                    textTransform: 'uppercase',
-                    fontSize: 20,
-                    letterSpacing: 1
-                  }}
-                >
-                  {tab.label}
-                </Text>
-              </View>
-            </Pressable>
-          );
-        })}
-      </View>
-      <View
-        style={{
-          flex: 1
-        }}
-      >
-        {panel?.id == 'cover' && <Cover event={event} organization={organization} user={user} />}
-        {panel?.id == 'standings' && <Standings event={event} user={user} />}
-        {panel?.id == 'details' && (
-          <Details event={event} organization={organization} user={user} />
-        )}
-      </View>
-
+    <View style={{ flex: 1 }}>
+      <PanelNavigation />
+      <Panels />
       {event.enabled.chat && <Chat event={event} user={user} />}
     </View>
   );

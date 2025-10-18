@@ -12,6 +12,8 @@ const Button = function ({ children, gradient = false, callback = null, styles =
 				...theme_variables.box_shadow,
 				...theme_variables.flex_center,
 				borderRadius: theme_variables.border_radius,
+				borderWidth: gradient ? 1 : 0,
+				borderColor: gradient ? '#fff' : 'transparent',
 				...styles
 			}}
 		>

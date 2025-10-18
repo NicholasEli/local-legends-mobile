@@ -31,7 +31,6 @@ function Messages({ live_event, event, user, chat, loading }) {
 
 	const [active, setActive] = useState(false);
 	const [athletes, setAthletes] = useState([]);
-	const [guest_athletes, setGuestAthletes] = useState([]);
 
 	const set_message = async function (value) {
 		if (!value) return null;
@@ -104,7 +103,7 @@ function Messages({ live_event, event, user, chat, loading }) {
 	};
 
 	const can_vote = function () {
-		const heat = get_active_heat(live_event, athletes, guest_athletes);
+		const heat = get_active_heat(live_event, athletes);
 
 		if (!heat?.display_public_votes) return false;
 		if (!live_event.enabled.voting) return false;
@@ -156,10 +155,8 @@ function Messages({ live_event, event, user, chat, loading }) {
 				.map((athlete) => athlete.athlete_id);
 
 			const req_athletes = await get_users(athlete_ids);
-			const req_guest_athletes = live_event.athletes.filter((athlete) => athlete.guest_id);
 
 			setAthletes([...req_athletes]);
-			setGuestAthletes([...req_guest_athletes]);
 		})();
 	}, []);
 
@@ -317,7 +314,7 @@ function Messages({ live_event, event, user, chat, loading }) {
 						showSenderAvatar={false}
 						showReceiverAvatar={true}
 						inputBorderColor={theme_variables.primary}
-						backgroundColor="white"
+						backgroundColor="#fff"
 						inputBackgroundColor="white"
 						placeholder="Enter Your Message"
 						placeholderColor={theme_variables.gray600}

@@ -2,9 +2,8 @@
 
 ##### Immediate
 
-- Event w/no heats
 - Event heat complete
-- Actual device test
+- Event Standing - Loading Screen
 - App Store Assets
 
 ##### Backlog

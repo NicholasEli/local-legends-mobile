@@ -521,7 +521,7 @@ export default function VOD() {
 
     if (obj.price > 0 && !purchase?._id) {
       return (
-        <Button callback={purchase_vod}>
+        <Button callback={purchase_vod} gradient={true}>
           <Text
             style={{
               color: '#fff',

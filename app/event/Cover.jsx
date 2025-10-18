@@ -360,28 +360,17 @@ export default function Cover({ event, organization }) {
           </Text>
         )}
       </View>
-      <BlurView
-        intensity={25}
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          zIndex: 2
-        }}
-      >
-        <Sponsors
-          sponsors={[
-            {
-              url: 'https://locallegends.live/',
-              image: theme_variables.logo_light
-            },
-            ...event.sponsors
-          ]}
-          borderColor={theme_variables.primary}
-          backgroundColor={theme_variables.secondary}
-          color="#ffffff"
-        />
-      </BlurView>
+
+      <Sponsors
+        sponsors={[
+          {
+            url: 'https://locallegends.live/',
+            image: theme_variables.logo_light
+          },
+          ...event.sponsors
+        ]}
+        color="#ffffff"
+      />
     </View>
   );
 }
