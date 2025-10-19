@@ -7,7 +7,7 @@
     "android": "clear && expo run:android",
     "ios": "clear && npx react-native run-ios --simulator \"iPhone 16 Pro\" --verbose",
     "ip": "ipconfig getifaddr en0",
-    "ios-device": "npx react-native start --host 192.168.2.79",
+    "ios-device": "npx react-native start --host 192.168.0.200",
     "web": "clear && expo start --web"
   },
   "dependencies": {

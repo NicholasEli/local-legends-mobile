@@ -257,10 +257,10 @@ export default function Cover({ event, organization }) {
                 <Text style={{ ...table_data2 }}>{event.sponsors.length}</Text>
               </View>
             )}
-            {event.followers.length > 0 && (
+            {event.subscribers.length > 0 && (
               <View style={{ ...tabel_row }}>
                 <Text style={{ ...table_data1 }}>Followers:</Text>
-                <Text style={{ ...table_data2 }}>{event.followers.length}</Text>
+                <Text style={{ ...table_data2 }}>{event.subscribers.length}</Text>
               </View>
             )}
           </View>
