@@ -12,7 +12,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import RunTimer from './RunTimer.jsx';
 import { get_users } from '../../api/users.js';
 import theme_variables from '../../helpers/theme-variables.js';
-import { get_active_heat } from '../../helpers/heat.js';
+import { get_active_heat, get_spectator_votes } from '../../helpers/heat.js';
 import { get_highest_run, get_average_run } from '../../helpers/run.js';
 import { hex_to_rgb } from '../../helpers/utils.js';
 
@@ -35,23 +35,6 @@ export default function Run({ event, heat, runs }) {
     if (event?.enabled?.max_score) max = event.enabled.max_score;
 
     return max;
-  };
-
-  const calc_spectator_votes = function () {
-    if (!heat) return 0;
-
-    let total_votes = 0;
-    if (!heat.total_votes) {
-      total_votes = 0;
-    } else {
-      total_votes = heat.total_votes;
-    }
-
-    if (total_votes == 0) return 0;
-
-    total_votes = Math.ceil(runs.votes / total_votes);
-
-    return total_votes;
   };
 
   const get_details = function () {
@@ -155,7 +138,7 @@ export default function Run({ event, heat, runs }) {
           </Text>
           <View
             style={{
-              width: '75%',
+              width: '100%',
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'flex',
@@ -170,21 +153,7 @@ export default function Run({ event, heat, runs }) {
               const size = 16;
 
               if (url) {
-                if (social == 'website') {
-                  return (
-                    <Link key={index} href={url}>
-                      <MaterialCommunityIcons name="web" size={size} color="#fff" />
-                    </Link>
-                  );
-                }
-
-                if (social == 'x') {
-                  return (
-                    <Link key={index} href={url}>
-                      <FontAwesome5 name="twitter" size={size} color="#fff" />
-                    </Link>
-                  );
-                }
+                if (social == 'website' || social == 'x') return <></>;
 
                 return (
                   <Link key={index} href={url}>
@@ -302,7 +271,7 @@ export default function Run({ event, heat, runs }) {
             >
               <View
                 style={{
-                  width: `${calc_spectator_votes()}%`,
+                  width: `${get_spectator_votes(heat, runs)}%`,
                   height: theme_variables.gap,
                   backgroundColor: theme_variables.yellow500
                 }}

@@ -79,13 +79,12 @@ export default function Login() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: theme_variables.gap,
-        backgroundColor: '#ffffff'
+        padding: theme_variables.gap
       }}
     >
       <Text
         style={{
-          color: theme_variables.primary,
+          color: '#fff',
           fontSize: 30,
           fontFamily: theme_variables.gothic,
           textTransform: 'uppercase',
@@ -96,7 +95,7 @@ export default function Login() {
       </Text>
       <Text
         style={{
-          color: theme_variables.gray900,
+          color: '#fff',
           fontSize: 20,
           fontFamily: theme_variables.gothic,
           textTransform: 'uppercase',
@@ -112,7 +111,7 @@ export default function Login() {
         style={{ ...input_styles, marginTop: theme_variables.gap }}
         placeholder="Email Address"
         onChangeText={(value) => setLogin({ ...login, email: value })}
-        placeholderTextColor="#000000"
+        placeholderTextColor="#fff"
       />
       <TextInput
         inputMode="text"
@@ -120,7 +119,7 @@ export default function Login() {
         style={{ ...input_styles, marginTop: theme_variables.gap }}
         placeholder="Password"
         onChangeText={(value) => setLogin({ ...login, password: value })}
-        placeholderTextColor="#000000"
+        placeholderTextColor="#fff"
       />
 
       <View
@@ -134,7 +133,7 @@ export default function Login() {
       >
         <Text
           style={{
-            color: theme_variables.gray900
+            color: '#fff'
           }}
         >
           Don't have an account?{' '}

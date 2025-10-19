@@ -32,107 +32,119 @@ export default function EventCard({ event, full_width = false }) {
 
 	return (
 		<Link
-			href={`/event/${event._id}`}
+			href={event?.href ? event.href : `/event/${event._id}`}
 			style={{
-				width: width_ratio,
-				backgroundColor: theme_variables.secondary,
-				borderRadius: theme_variables.border_radius,
-				...theme_variables.box_shadow
+				paddingTop: theme_variables.gap,
+				paddingBottom: theme_variables.gap
 			}}
 		>
 			<View
 				style={{
-					width: '100%',
-					height: '100%',
-					position: 'relative',
-					overflow: 'hidden',
-					borderRadius: theme_variables.border_radius
+					width: width_ratio,
+					backgroundColor: theme_variables.secondary,
+					borderRadius: theme_variables.border_radius,
+					...theme_variables.box_shadow
 				}}
 			>
 				<View
 					style={{
 						width: '100%',
-						height: width_ratio,
-						overflow: 'hidden'
-					}}
-				>
-					<Image
-						resizeMode="cover"
-						source={{ uri: event?.poster ? event.poster.url : theme_variables.banner }}
-						style={{
-							width: '100%',
-							height: '100%'
-						}}
-					/>
-				</View>
-				<BlurView
-					intensity={2}
-					style={{
-						width: width_ratio - theme_variables.gap,
-						position: 'absolute',
-						bottom: theme_variables.gap,
-						left: theme_variables.gap / 2,
-						padding: theme_variables.gap / 2,
-						backgroundColor: 'rgba(255, 255, 255, 0.5)',
+						height: '100%',
+						position: 'relative',
+						overflow: 'hidden',
 						borderRadius: theme_variables.border_radius
 					}}
 				>
-					<Text
-						style={{
-							...text_styles,
-							fontSize: 10,
-							lineHeight: 15,
-							fontFamily: 'inherit'
-						}}
-					>
-						{event.sport}
-					</Text>
-					<Text style={{ ...text_styles, marginTop: 2 }} numberOfLines={1}>
-						{event.name}
-					</Text>
-					<Text
-						style={{
-							...text_styles,
-							fontSize: 10,
-							lineHeight: 10,
-							fontFamily: 'inherit'
-						}}
-					>
-						{event.address.city} {event.address.state}
-					</Text>
 					<View
 						style={{
-							maxWidth: 120,
-							position: 'absolute',
-							top: '25%',
-							right: theme_variables.gap,
-							zIndex: 2,
-							borderBottomLeftRadius: theme_variables.gap,
-							borderBottomRightRadius: theme_variables.gap,
+							width: '100%',
+							height: width_ratio,
 							overflow: 'hidden'
 						}}
 					>
-						<Text
+						<Image
+							resizeMode="cover"
+							source={{ uri: event?.poster ? event.poster.url : theme_variables.banner }}
 							style={{
-								...date_styles,
-								fontSize: 40,
-								lineHeight: 40
+								width: '100%',
+								height: '100%'
 							}}
-						>
-							{dayjs(event.date.start).format('DD')}
-						</Text>
-						<Text
-							style={{
-								...date_styles,
-								marginTop: -8,
-								fontSize: 20,
-								lineHeight: 20
-							}}
-						>
-							{dayjs(event.date.start).format('MMM')}
-						</Text>
+						/>
 					</View>
-				</BlurView>
+					<BlurView
+						intensity={2}
+						style={{
+							width: width_ratio - theme_variables.gap,
+							position: 'absolute',
+							bottom: theme_variables.gap,
+							left: theme_variables.gap / 2,
+							padding: theme_variables.gap / 2,
+							backgroundColor: 'rgba(255, 255, 255, 0.5)',
+							borderRadius: theme_variables.border_radius
+						}}
+					>
+						<Text
+							style={{
+								...text_styles,
+								fontSize: 10,
+								lineHeight: 15,
+								fontFamily: 'inherit'
+							}}
+						>
+							{event.sport}
+						</Text>
+
+						<Text style={{ ...text_styles, marginTop: 2 }} numberOfLines={1}>
+							{event.name}
+						</Text>
+						{event?.address?.city && event?.address?.state && (
+							<Text
+								style={{
+									...text_styles,
+									fontSize: 10,
+									lineHeight: 10,
+									fontFamily: 'inherit'
+								}}
+							>
+								{event.address.city} {event.address.state}
+							</Text>
+						)}
+						{event?.date?.start && (
+							<View
+								style={{
+									maxWidth: 120,
+									position: 'absolute',
+									top: '25%',
+									right: theme_variables.gap,
+									zIndex: 2,
+									borderBottomLeftRadius: theme_variables.gap,
+									borderBottomRightRadius: theme_variables.gap,
+									overflow: 'hidden'
+								}}
+							>
+								<Text
+									style={{
+										...date_styles,
+										fontSize: 40,
+										lineHeight: 40
+									}}
+								>
+									{dayjs(event.date.start).format('DD')}
+								</Text>
+								<Text
+									style={{
+										...date_styles,
+										marginTop: -8,
+										fontSize: 20,
+										lineHeight: 20
+									}}
+								>
+									{dayjs(event.date.start).format('MMM')}
+								</Text>
+							</View>
+						)}
+					</BlurView>
+				</View>
 			</View>
 		</Link>
 	);

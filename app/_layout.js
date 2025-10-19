@@ -34,7 +34,7 @@ export default function Layout() {
         colors={[
           '#000',
           theme_variables.secondary,
-          theme_variables.primary,
+          theme_variables.blue700,
           theme_variables.secondary,
           '#000'
         ]}

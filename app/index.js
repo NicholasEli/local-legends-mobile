@@ -30,12 +30,18 @@ export default function Home() {
 
       const _athletes = req_athletes;
       _athletes.splice(req_content.index.athletes.index, 0, req_content.index.athletes);
-      setAthletes(req_athletes);
+      setAthletes(_athletes);
 
+      const _events = req_events;
+      if (req_content?.index?.events) {
+        _events.splice(req_content.index.events.index, 0, req_content.index.events);
+      }
       setEvents(req_events);
 
       const _vods = req_vods;
-      if (req_content?.index?.vods) _vods.push(req_content.index.vods);
+      if (req_content?.index?.vods) {
+        _vods.splice(req_content.index.vods.index, 0, req_content.index.vods);
+      }
       setVODs(_vods);
 
       const token = await get_auth_token();
@@ -52,13 +58,13 @@ export default function Home() {
   return (
     <View style={{ flex: 1 }}>
       <View style={{ marginBottom: theme_variables.gap }}>
-        <Scroller athletes={athletes} marginTop={theme_variables.gap * 2.5} />
+        <Scroller athletes={athletes} />
       </View>
       <ScrollView>
         {content?.index?.banner && <Banner {...content.index.banner} />}
 
         <Scroller vods={vods} user={user} />
-        <Scroller events={events} marginTop={theme_variables.gap} />
+        <Scroller events={events} />
         <View style={{ width: '100%', height: theme_variables.gap * 4 }} />
       </ScrollView>
     </View>

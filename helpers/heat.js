@@ -18,3 +18,10 @@ export const get_active_heat = function (event, athletes = []) {
 
 	return active_heat;
 };
+
+export const get_spectator_votes = function (heat, runs) {
+	if (!heat || !runs) return 0;
+	if (heat.total_votes == 0 || runs.votes == 0) return 0;
+
+	return (runs.votes / heat.total_votes) * 100;
+};

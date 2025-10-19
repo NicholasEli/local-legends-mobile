@@ -79,10 +79,10 @@ const theme_variables = {
 		alignItems: 'center'
 	},
 	box_shadow: {
-		shadowColor: '#000',
-		shadowOffset: { width: 1, height: 3 },
-		shadowOpacity: 0.75,
-		shadowRadius: 3
+		shadowColor: '#fff',
+		shadowOffset: { width: 2, height: 2 },
+		shadowOpacity: 0.15,
+		shadowRadius: 2
 	}
 };
 

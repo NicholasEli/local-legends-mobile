@@ -261,8 +261,6 @@ export default function Athlete() {
   };
 
   const follow = async function () {
-    console.clear();
-
     if (!account) {
       Alert.alert('Account Required', 'You must be logged in to follow this athlete', [
         { text: 'Cancel', style: 'cancel' },
@@ -330,17 +328,16 @@ export default function Athlete() {
       setEvents(req_events);
 
       const token = await get_auth_token();
-
       if (token) {
         const req_account = await auth.user(token);
         if (req_account?._id) {
           setAccount(req_account);
-          request_push_notification_permission();
+          //request_push_notification_permission();
         }
 
         const req_purchases = await get_purchases({ token });
 
-        if (req_purchases) {
+        if (req_purchases && !req_purchases.error) {
           let purchased_vods = req_purchases
             .filter((purchase) => purchase.vod_id)
             .map((purchase) => purchase.vod_id);
@@ -635,7 +632,7 @@ export default function Athlete() {
                 >
                   Upload. Share. Grow.
                 </Text>
-                {console.log(user)}
+
                 {!user.stripe_account_id && (
                   <Text
                     style={{
@@ -884,61 +881,67 @@ export default function Athlete() {
             </View>
 
             <TextInput
-              style={{ ...input_styles, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', marginTop: theme_variables.gap }}
               onChangeText={(value) => set_profile_fields('firstname', value)}
               value={firstname}
               placeholder="First Name"
               keyboardType="default"
               inputMode="text"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <TextInput
-              style={{ ...input_styles, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', marginTop: theme_variables.gap }}
               onChangeText={(value) => set_profile_fields('lastname', value)}
               value={lastname}
               placeholder="Last Name"
               keyboardType="default"
               inputMode="text"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <TextInput
               editable
-              style={{ ...input_styles, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', marginTop: theme_variables.gap }}
               onChangeText={(value) => set_athlete_fields('bio', value)}
               multiline
               numberOfLines={4}
               maxLength={400}
               value={bio}
               placeholder="Bio"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <TextInput
-              style={{ ...input_styles, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', marginTop: theme_variables.gap }}
               onChangeText={(value) => set_hometown_fields('city', value)}
               value={hometown.city}
               placeholder="City"
               keyboardType="default"
               inputMode="text"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <TextInput
-              style={{ ...input_styles, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', marginTop: theme_variables.gap }}
               onChangeText={(value) => set_hometown_fields('state', value)}
               value={hometown.state}
               placeholder="State/Province"
               keyboardType="default"
               inputMode="text"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <TextInput
               onChangeText={(value) => set_hometown_fields('country', value)}
-              style={{ ...input_styles, width: 75, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', width: 75, marginTop: theme_variables.gap }}
               value={hometown.country}
               autoCapitalize="characters"
               maxLength={2}
               placeholder="US"
               keyboardType="default"
               inputMode="text"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <View style={divider_styles} />
@@ -1056,13 +1059,19 @@ export default function Athlete() {
                   <FontAwesome5 name={social.VALUE} size={20} color={theme_variables.gray900} />
 
                   <TextInput
-                    style={{ ...input_styles, width: '90%', marginTop: theme_variables.gap }}
+                    style={{
+                      ...input_styles,
+                      color: '#000',
+                      width: '90%',
+                      marginTop: theme_variables.gap
+                    }}
                     onChangeText={(value) => set_social_fields(social.VALUE, value)}
                     value={socials[social.VALUE]}
                     placeholder={key}
                     keyboardType="url"
                     inputMode="url"
                     autoCapitalize="none"
+                    placeholderTextColor={theme_variables.gray900}
                   />
                 </View>
               );

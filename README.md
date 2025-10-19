@@ -2,16 +2,14 @@
 
 ##### Immediate
 
+- Auth screen - update UI
 - Event heat complete
 - Event Standing - Loading Screen
 - App Store Assets
 
 ##### Backlog
 
-- Graphics Updates
 - Return VOD price tags
-- Follow User
-- Subscribe to Event
 - Push Notifications (Subscribe to athlete, event, general) & - Athlete Follow
 - Add Stripe
 

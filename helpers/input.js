@@ -5,5 +5,5 @@ export const input_styles = {
 	padding: theme_variables.gap,
 	borderColor: theme_variables.gray900,
 	borderWidth: 1,
-	color: '#000000'
+	color: '#fff'
 };

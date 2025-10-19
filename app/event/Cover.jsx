@@ -326,10 +326,23 @@ export default function Cover({ event, organization }) {
           paddingRight: theme_variables.gap
         }}
       >
+        {event?.date?.start && (
+          <Text
+            style={{
+              fontSize: 16,
+              lineHeight: 20,
+              fontFamily: theme_variables.gothic_italic,
+              ...text_styles
+            }}
+          >
+            {dayjs(event.date.start).format('MMMM DD, YYYY')}
+          </Text>
+        )}
         {organization && (
           <Text
             style={{
-              fontSize: 30,
+              fontSize: 32,
+              lineHeight: 36,
               fontFamily: theme_variables.gothic_italic,
               textTransform: 'uppercase',
               color: '#ffffff',
@@ -341,24 +354,14 @@ export default function Cover({ event, organization }) {
         )}
         <Text
           style={{
-            fontSize: 50,
+            fontSize: 48,
+            lineHeight: 52,
             fontFamily: theme_variables.gothic,
             ...text_styles
           }}
         >
           {event.name}
         </Text>
-        {event?.date?.start && (
-          <Text
-            style={{
-              fontSize: 30,
-              fontFamily: theme_variables.gothic_italic,
-              ...text_styles
-            }}
-          >
-            {dayjs(event.date.start).format('MMMM DD, YYYY')}
-          </Text>
-        )}
       </View>
 
       <Sponsors
