@@ -10,46 +10,21 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E06D7A9FC507F9E997BAA87 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 278B9E9C4C9ADD38A3E93910 /* PrivacyInfo.xcprivacy */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		5EBCA9211DE34DD99C4A13C1 /* ReactNativeDailyJSScreenShareExtension.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94832AF0E713419695223B29 /* ReactNativeDailyJSScreenShareExtension.xcframework */; };
 		9A730EE6D006896A69357959 /* Pods_locallegendsmobile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3DAC3E9E1CC9B83685E2C4E /* Pods_locallegendsmobile.framework */; };
+		A44C05DC2EA5C39700C1F96C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A44C05DB2EA5C39700C1F96C /* Assets.xcassets */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		BD3D4A0C90DF4A76B54AFD7C /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6130C459FF7C4B419DC769E9 /* ReplayKit.framework */; };
 		C0456532D233412BA96CA32E /* ReactNativeDailyJSScreenShareExtension.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94832AF0E713419695223B29 /* ReactNativeDailyJSScreenShareExtension.xcframework */; };
-		EA6D1488B61E44F8A70D26A6 /* ScreenCaptureExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 6F787CEBF8234017BC07B629 /* ScreenCaptureExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		ED375EF17F144820979D15C1 /* SampleHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CE5B4ED0D0D44BDA9FA0EA4 /* SampleHandler.swift */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 		F450BFF88063ACDAE5BA3E27 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EB0633A16DD5952AEA7C499 /* ExpoModulesProvider.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		3DF20C93A5DB4B1FA06C37D2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CD8A232F00244F48ADEA3820;
-			remoteInfo = ScreenCaptureExtension;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
-		4E92A55E3A1341C4A8DEDD05 /* Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				5EBCA9211DE34DD99C4A13C1 /* ReactNativeDailyJSScreenShareExtension.xcframework in Frameworks */,
-			);
-			name = Frameworks;
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		F7B48DC1E62C40F7B1095F36 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				EA6D1488B61E44F8A70D26A6 /* ScreenCaptureExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -67,9 +42,9 @@
 		6130C459FF7C4B419DC769E9 /* ReplayKit.framework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		6EA7B04DFF9CA6C123A37D74 /* Pods-locallegendsmobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-locallegendsmobile.release.xcconfig"; path = "Target Support Files/Pods-locallegendsmobile/Pods-locallegendsmobile.release.xcconfig"; sourceTree = "<group>"; };
 		6EB0633A16DD5952AEA7C499 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-locallegendsmobile/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		6F787CEBF8234017BC07B629 /* ScreenCaptureExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; fileEncoding = 9; includeInIndex = 0; path = ScreenCaptureExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		94832AF0E713419695223B29 /* ReactNativeDailyJSScreenShareExtension.xcframework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = ReactNativeDailyJSScreenShareExtension.xcframework; path = Pods/ReactNativeDailyJSScreenShareExtension/ReactNativeDailyJSScreenShareExtension.xcframework; sourceTree = "<group>"; };
 		9A0AB5C871732372AB2C6B5E /* Pods-locallegendsmobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-locallegendsmobile.debug.xcconfig"; path = "Target Support Files/Pods-locallegendsmobile/Pods-locallegendsmobile.debug.xcconfig"; sourceTree = "<group>"; };
+		A44C05DB2EA5C39700C1F96C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = locallegendsmobile/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		C3DAC3E9E1CC9B83685E2C4E /* Pods_locallegendsmobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_locallegendsmobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,14 +63,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B03247B5F45C4FE992C5DE63 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				BD3D4A0C90DF4A76B54AFD7C /* ReplayKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -109,6 +76,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				278B9E9C4C9ADD38A3E93910 /* PrivacyInfo.xcprivacy */,
+				A44C05DB2EA5C39700C1F96C /* Assets.xcassets */,
 			);
 			name = locallegendsmobile;
 			sourceTree = "<group>";
@@ -160,7 +128,6 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* locallegendsmobile.app */,
-				6F787CEBF8234017BC07B629 /* ScreenCaptureExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -220,30 +187,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				D857213A3E934C2ABDA21E2F /* PBXTargetDependency */,
 			);
 			name = locallegendsmobile;
 			productName = locallegendsmobile;
 			productReference = 13B07F961A680F5B00A75B9A /* locallegendsmobile.app */;
 			productType = "com.apple.product-type.application";
-		};
-		CD8A232F00244F48ADEA3820 /* ScreenCaptureExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 157963F7CC984C8A8CD1926D /* Build configuration list for PBXNativeTarget "ScreenCaptureExtension" */;
-			buildPhases = (
-				CCA4688564844752AB19209F /* Sources */,
-				B03247B5F45C4FE992C5DE63 /* Frameworks */,
-				4E92A55E3A1341C4A8DEDD05 /* Frameworks */,
-				E68278C7068D4E98B34CB712 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = ScreenCaptureExtension;
-			productName = ScreenCaptureExtension;
-			productReference = 6F787CEBF8234017BC07B629 /* ScreenCaptureExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -256,10 +204,6 @@
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1250;
-					};
-					CD8A232F00244F48ADEA3820 = {
-						CreatedOnToolsVersion = 13.4.1;
-						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -277,7 +221,6 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* locallegendsmobile */,
-				CD8A232F00244F48ADEA3820 /* ScreenCaptureExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -291,13 +234,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				3E06D7A9FC507F9E997BAA87 /* PrivacyInfo.xcprivacy in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E68278C7068D4E98B34CB712 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				A44C05DC2EA5C39700C1F96C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -566,23 +503,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CCA4688564844752AB19209F /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				ED375EF17F144820979D15C1 /* SampleHandler.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		D857213A3E934C2ABDA21E2F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CD8A232F00244F48ADEA3820 /* ScreenCaptureExtension */;
-			targetProxy = 3DF20C93A5DB4B1FA06C37D2 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -591,10 +512,13 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = locallegendsmobile/locallegendsmobile.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5NU8AVP2Q4;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = W8HF6M9LGE;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -605,12 +529,14 @@
 					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = locallegendsmobile/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Local Legends Live";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -619,10 +545,15 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.locallegendsmobile;
 				PRODUCT_NAME = locallegendsmobile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "locallegendsmobile/locallegendsmobile-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -633,21 +564,26 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = locallegendsmobile/locallegendsmobile.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5NU8AVP2Q4;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = W8HF6M9LGE;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"Pods/ReactNativeDailyJSScreenShareExtension\"",
 				);
 				INFOPLIST_FILE = locallegendsmobile/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Local Legends Live";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -656,93 +592,17 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.locallegendsmobile;
 				PRODUCT_NAME = locallegendsmobile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "locallegendsmobile/locallegendsmobile-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
-		};
-		23A7BC3DBCCC4ADCAB0DD5F0 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = ScreenCaptureExtension/ScreenCaptureExtension.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 5NU8AVP2Q4;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = ScreenCaptureExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ScreenCaptureExtension;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0.0;
-				MTL_FAST_MATH = YES;
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.locallegendsmobile.ScreenCaptureExtension;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		70C7366AA0B046049B85F610 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = ScreenCaptureExtension/ScreenCaptureExtension.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 5NU8AVP2Q4;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = ScreenCaptureExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ScreenCaptureExtension;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.locallegendsmobile.ScreenCaptureExtension;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -810,10 +670,7 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -879,10 +736,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -898,15 +752,6 @@
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
 				13B07F951A680F5B00A75B9A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		157963F7CC984C8A8CD1926D /* Build configuration list for PBXNativeTarget "ScreenCaptureExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				70C7366AA0B046049B85F610 /* Debug */,
-				23A7BC3DBCCC4ADCAB0DD5F0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
