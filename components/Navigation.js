@@ -1,6 +1,7 @@
 import Meteor from '@meteorrn/core';
 import { useNavigation, useRouter, Link, useSegments, usePathname } from 'expo-router';
 import { BlurView } from 'expo-blur';
+import Entypo from '@expo/vector-icons/Entypo';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, View, Pressable, Image, Text } from 'react-native';
@@ -69,18 +70,6 @@ export default function Navigation() {
 		router.push('/');
 	};
 
-	const background_color = function () {
-		if (path.indexOf('video-on-demand') > -1) {
-			return '#000000';
-		}
-
-		if (path.indexOf('event') > -1) {
-			return '#000000';
-		}
-
-		return theme_variables.secondary;
-	};
-
 	const display_account_btn = function () {
 		if (path.indexOf('athlete') > -1) return false;
 		if (path.indexOf('spectator') > -1) return false;
@@ -113,24 +102,19 @@ export default function Navigation() {
 				flexDirection: 'row',
 				justifyContent: 'space-between',
 				alignItems: 'center',
-				...theme_variables.padding_half,
-				backgroundColor: background_color()
+				backgroundColor: '#000',
+				...theme_variables.padding_half
 			}}
 		>
-			<BlurView intensity={0} style={{ ...blur_styles }}>
+			<View style={{ ...blur_styles }}>
 				{router.canGoBack() && (
 					<Pressable onPress={() => redirect_back()}>
-						{!display_account_btn() && (
-							<MaterialCommunityIcons name="home-lightning-bolt" size={24} color="#ffffff" />
-						)}
-						{display_account_btn() && (
-							<MaterialCommunityIcons name="arrow-left-thick" size={20} color="#fff" />
-						)}
+						<Entypo name="chevron-small-left" size={32} color="#fff" />
 					</Pressable>
 				)}
-			</BlurView>
+			</View>
 
-			<View
+			<Pressable
 				style={{
 					display: 'flex',
 					flexDirection: 'row',
@@ -138,31 +122,18 @@ export default function Navigation() {
 					alignItems: 'center',
 					gap: theme_variables.gap / 2
 				}}
+				onPress={() => router.push('/')}
 			>
 				<Image width={30} height={30} source={{ uri: theme_variables.logo_light }} />
-				<Text
-					style={{
-						fontFamily: theme_variables.gothic,
-						fontSize: 30,
-						textTransform: 'uppercase',
-						color: '#ffffff'
-					}}
-				>
-					localegends.live
-				</Text>
-			</View>
+			</Pressable>
 
-			<BlurView intensity={0} style={{ ...blur_styles }}>
+			<View style={{ ...blur_styles }}>
 				{display_account_btn() && (
 					<Pressable onPress={redirect_to_auth}>
-						<MaterialCommunityIcons
-							name="account-cog"
-							size={20}
-							color={user ? theme_variables.primary : '#ffffff'}
-						/>
+						<MaterialCommunityIcons name="lightning-bolt" size={24} color="#fff" />
 					</Pressable>
 				)}
-			</BlurView>
+			</View>
 		</View>
 	);
 }

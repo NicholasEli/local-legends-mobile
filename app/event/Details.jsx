@@ -2,11 +2,11 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { Link, useRouter } from 'expo-router';
 import {
   Alert,
+  Linking,
   Dimensions,
   ScrollView,
   Modal,
   Pressable,
-  Button,
   View,
   Image,
   Text
@@ -18,6 +18,8 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Fontisto from '@expo/vector-icons/Fontisto';
+import Button from '../../components/Button.jsx';
 import { set_event_registration } from '../../api/event-registration.js';
 import { set_event_subscription } from '../../api/event.js';
 import { get_auth_token } from '../../helpers/auth.js';
@@ -27,12 +29,12 @@ import dayjs from 'dayjs';
 
 const title_styles = {
   fontWeight: 700,
-  color: theme_variables.primary,
+  color: '#fff',
   textTransform: 'uppercase'
 };
 
 const date_styles = {
-  color: theme_variables.gray900,
+  color: '#fff',
   fontSize: 20,
   fontFamily: theme_variables.gothic,
   textTransform: 'uppercase'
@@ -138,11 +140,27 @@ export default function Details({ event, organization, user }) {
     });
   };
 
+  const score_definition = function () {
+    if (event.judges.length > 0) {
+      if (event.enabled.highest_score) {
+        return `Score is based on highest judge score amongst any ${event.labels.run}`;
+      }
+
+      return `Score is based on average judge score for each ${event.labels.run}`;
+    }
+
+    if (event.enabled.highest_score) {
+      return `Score is based on highest ${event.labels.run} score`;
+    }
+
+    return `Score is based on average ${event.labels.run} score`;
+  };
+
   useEffect(() => {}, [subscribers]);
 
   return (
     <>
-      <View style={{ zIndex: 10 }}>
+      <View style={{ zIndex: 10, marginTop: theme_variables.gap * 3 }}>
         <Toast />
       </View>
       <View
@@ -154,7 +172,7 @@ export default function Details({ event, organization, user }) {
         <ScrollView>
           <Text
             style={{
-              color: theme_variables.primary,
+              color: '#fff',
               fontSize: 30,
               fontFamily: theme_variables.gothic,
               textTransform: 'uppercase'
@@ -183,7 +201,7 @@ export default function Details({ event, organization, user }) {
           {event.sport && (
             <Text
               style={{
-                color: theme_variables.gray900,
+                color: '#fff',
                 fontSize: 15,
                 fontFamily: theme_variables.gothic,
                 textTransform: 'uppercase'
@@ -193,13 +211,23 @@ export default function Details({ event, organization, user }) {
             </Text>
           )}
 
+          <Text
+            style={{
+              marginTop: theme_variables.gap,
+              color: '#fff',
+              fontSize: 12
+            }}
+          >
+            {score_definition()}
+          </Text>
+
           {event.description && (
             <View style={{ marginTop: theme_variables.gap }}>
               <RenderHtml
                 contentWidth={width}
                 source={{ html: event.description }}
                 tagsStyles={{
-                  body: { color: theme_variables.gray900 },
+                  body: { color: '#fff' },
                   h1: {
                     ...title_styles,
                     fontSize: 25
@@ -224,8 +252,8 @@ export default function Details({ event, organization, user }) {
                     ...title_styles,
                     fontSize: 20
                   },
-                  p: { color: theme_variables.gray900 },
-                  li: { color: theme_variables.gray900 }
+                  p: { fontSize: 12, color: '#fff' },
+                  li: { fontSize: 12, color: '#fff' }
                 }}
               />
             </View>
@@ -241,86 +269,71 @@ export default function Details({ event, organization, user }) {
           padding: theme_variables.gap
         }}
       >
-        {!user && (
-          <Pressable
-            onPress={() => subscribe()}
-            style={{
-              ...button_styles({}),
-              ...action_button_styles,
-              backgroundColor: theme_variables.secondary
-            }}
-          >
-            <Text style={button_text_styles({})}>Get Event Notifications</Text>
-            <MaterialIcons name="notifications" size={24} color="#ffffff" />
-          </Pressable>
-        )}
-
-        {user && !subscribers[user._id] && (
-          <Pressable
-            onPress={() => subscribe()}
-            style={{
-              ...button_styles({}),
-              ...action_button_styles,
-              backgroundColor: theme_variables.secondary
-            }}
-          >
-            <Text style={button_text_styles({})}>Get Event Notifications</Text>
-            <MaterialIcons name="notifications" size={24} color="#ffffff" />
-          </Pressable>
-        )}
-
-        {user && subscribers[user._id] && (
-          <Pressable
-            onPress={() => subscribe()}
-            style={{ ...button_styles({}), ...action_button_styles, backgroundColor: '#000000' }}
-          >
-            <Text style={button_text_styles({})}>Stop Event Notifications</Text>
-            <MaterialIcons name="notifications-active" size={24} color="#ffffff" />
-          </Pressable>
-        )}
-
         {event.address.street && event.address.state && event.address.city && (
-          <Link
-            href={`https://www.google.com/maps/search/?api=1&query=${event.address.street},+${event.address.state},+${event.address.city}+${event.address.postal_code}`}
-            style={{
-              ...button_styles({ backgroundColor: theme_variables.gray200 })
-            }}
-          >
-            <Text style={{ ...button_text_styles({ color: theme_variables.gray900 }) }}>
-              Open In Google Maps
-            </Text>
-          </Link>
+          <Button callback={() => subscribe()} gradient={true}>
+            <View style={{ ...theme_variables.flex_row, gap: theme_variables.gap / 2 }}>
+              <Text style={button_text_styles({ color: '#fff' })}>Get Event Notifications</Text>
+              {!user && <MaterialIcons name="notifications" size={24} color={'#fff'} />}
+              {user && subscribers[user._id] && (
+                <MaterialIcons name="notifications-active" size={24} color={'#fff'} />
+              )}
+              {user && !subscribers[user._id] && (
+                <MaterialIcons name="notifications" size={24} color={'#fff'} />
+              )}
+            </View>
+          </Button>
         )}
 
         {organization?.profile?.organization?.socials?.website && (
-          <View
-            style={{
-              ...button_styles({})
-            }}
+          <Button
+            callback={() => setDisplayRegistration(true)}
+            styles={{ backgroundColor: theme_variables.gray200 }}
           >
-            <Link href={organization.profile.organization.socials.website}>
-              <View style={action_button_styles}>
-                <Text style={button_text_styles({})}>{organization.profile.organization.name}</Text>
-                <MaterialCommunityIcons name="web" size={20} color="#ffffff" />
-              </View>
-            </Link>
+            <View style={{ ...theme_variables.flex_row, gap: theme_variables.gap / 2 }}>
+              <Text
+                style={button_text_styles({
+                  color: theme_variables.gray900
+                })}
+              >
+                Registration
+              </Text>
+              <MaterialIcons name="app-registration" size={24} color={theme_variables.gray900} />
+            </View>
+          </Button>
+        )}
+
+        <Button
+          callback={() =>
+            Linking.openURL(
+              `https://www.google.com/maps/search/?api=1&query=${event.address.street},+${event.address.state},+${event.address.city}+${event.address.postal_code}`
+            )
+          }
+          styles={{ backgroundColor: theme_variables.gray200 }}
+        >
+          <View style={{ ...theme_variables.flex_row, gap: theme_variables.gap / 2 }}>
+            <Text style={button_text_styles({ color: theme_variables.gray900 })}>
+              Open In Google Maps
+            </Text>
+            <Fontisto name="map-marker" size={20} color={theme_variables.gray900} />
           </View>
+        </Button>
+
+        {event?.enabled?.registration && (
+          <Button
+            callback={() => Linking.openURL(organization.profile.organization.socials.website)}
+            styles={{ backgroundColor: theme_variables.gray200 }}
+          >
+            <View style={{ ...theme_variables.flex_row, gap: theme_variables.gap / 2 }}>
+              <Text style={button_text_styles({ color: theme_variables.gray900 })}>
+                {organization.profile.organization.name}
+              </Text>
+              <AntDesign name="link" size={20} color={theme_variables.gray900} />
+            </View>
+          </Button>
         )}
 
         {event?.enabled?.registration && (
           <>
-            <View
-              style={{
-                ...button_styles({}),
-                backgroundColor: theme_variables.secondary
-              }}
-            >
-              <Pressable onPress={() => setDisplayRegistration(true)} style={action_button_styles}>
-                <Text style={button_text_styles({})}>Registration</Text>
-                <AntDesign name="plus" size={20} color="#ffffff" />
-              </Pressable>
-            </View>
-
             <Modal
               animationType="slide"
               visible={display_registration}

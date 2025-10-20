@@ -75,7 +75,8 @@ const RunTimer = ({ time = null, seconds = null, start = false, onComplete = nul
 			style={{
 				fontFamily: theme_variables.gothic,
 				fontSize: 33,
-				letterSpacing: 1
+				letterSpacing: 1,
+				color: '#fff'
 			}}
 		>
 			{display}

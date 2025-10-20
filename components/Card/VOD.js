@@ -1,7 +1,9 @@
 import { Link } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { Dimensions, Image, Text, View } from 'react-native';
 import CardTag from '../../components/CardTag.jsx';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import theme_variables from '../../helpers/theme-variables.js';
 import dayjs from 'dayjs';
 
@@ -14,78 +16,105 @@ export default function VODCard({ vod, full_width, owned, color }) {
 	const height_ratio = width_ratio * theme_variables.ratio_16_9;
 
 	const text_styles = {
-		fontFamily: 'League-Gothic-Condensed',
-		fontSize: 28,
-		lineHeight: 28,
+		fontFamily: 'League-Gothic',
+		fontSize: 20,
+		lineHeight: 24,
 		color: color ? color : '#ffffff',
 		textTransform: 'uppercase'
+	};
+
+	const icon_styles = {
+		position: 'absolute',
+		bottom: theme_variables.gap / 1.25,
+		right: theme_variables.gap / 2,
+		zIndex: 2
 	};
 
 	if (!vod) return <></>;
 
 	return (
-		<Link
-			href={`/video-on-demand/${vod._id}`}
+		<View
 			style={{
 				width: width_ratio,
 				height: height_ratio,
 				position: 'relative',
-				overflow: 'hidden',
-				borderRadius: 20,
-				backgroundColor: '#ffffff',
-				borderColor: color ? color : '#ffffff',
-				borderWidth: 2
+				borderRadius: theme_variables.border_radius,
+				...theme_variables.box_shadow
 			}}
 		>
-			<View
+			<Link
+				href={vod.href || `/video-on-demand/${vod._id}`}
 				style={{
-					width: width_ratio,
-					height: height_ratio,
-					position: 'relative'
+					flex: 1,
+					borderRadius: theme_variables.border_radius,
+					overflow: 'hidden'
 				}}
 			>
-				<LinearGradient
-					colors={['transparent', 'rgba(0,28,57,0.95)']}
-					locations={[0, 0.75]}
-					start={{ x: 0.8, y: 0 }}
-					end={{ x: 0, y: 1 }}
-					style={{ width: width_ratio, height: height_ratio, position: 'absolute', zIndex: 2 }}
-				/>
 				<View
 					style={{
-						position: 'absolute',
-						top: theme_variables.gap / 2,
-						right: theme_variables.gap / 2,
-						zIndex: 3
+						width: width_ratio,
+						height: height_ratio,
+						position: 'relative'
 					}}
 				>
-					{/*<CardTag
+					<LinearGradient
+						colors={['transparent', theme_variables.secondary]}
+						locations={[0, 0.9]}
+						start={{ x: 0, y: 0 }}
+						end={{ x: 0, y: 1 }}
+						style={{ width: width_ratio, height: height_ratio, position: 'absolute', zIndex: 2 }}
+					/>
+					<View
+						style={{
+							position: 'absolute',
+							top: theme_variables.gap / 2,
+							right: theme_variables.gap / 2,
+							zIndex: 3
+						}}
+					>
+						{/*<CardTag
 						text={vod.price > 0 ? `$${(vod.price / 200).toFixed(2)}` : 'Free'}
 						backgroundColor={vod.price > 0 ? theme_variables.green500 : theme_variables.secondary}
 					/>*/}
+					</View>
+					<BlurView
+						intensity={2}
+						style={{
+							width: width_ratio - theme_variables.gap,
+							position: 'absolute',
+							left: theme_variables.gap / 2,
+							bottom: theme_variables.gap / 2,
+							zIndex: 3,
+							padding: theme_variables.gap / 2,
+							backgroundColor: 'rgba(255, 255, 255, 0.5)',
+							borderRadius: theme_variables.border_radius
+						}}
+					>
+						{vod.created_at && (
+							<Text style={{ ...text_styles, fontSize: 16, lineHeight: 16 }}>
+								Release Date {dayjs(vod.created_at).format('MM.DD.YYYY')}
+							</Text>
+						)}
+						<Text style={text_styles} numberOfLines={1}>
+							{vod.title}
+						</Text>
+						{vod.created_at && (
+							<View style={icon_styles}>
+								<FontAwesome name="play-circle" size={32} color="#ffffff" />
+							</View>
+						)}
+					</BlurView>
+					<Image
+						source={{
+							uri: vod.banner ? vod.banner.url : 'https://locallegends.live/placeholder-banner.png'
+						}}
+						style={{
+							width: width_ratio,
+							height: height_ratio
+						}}
+					/>
 				</View>
-				<View
-					style={{
-						width: width_ratio - theme_variables.gap * 2,
-						position: 'absolute',
-						left: theme_variables.gap,
-						bottom: theme_variables.gap - 4,
-						zIndex: 3
-					}}
-				>
-					<Text style={text_styles}>{vod.title}</Text>
-					<Text style={{ ...text_styles, fontSize: 24, lineHeight: 24 }}>
-						{dayjs(vod.created_at).format('MMM DD, YYYY')}
-					</Text>
-				</View>
-				<Image
-					source={{ uri: vod.poster.url }}
-					style={{
-						width: width_ratio,
-						height: height_ratio
-					}}
-				/>
-			</View>
-		</Link>
+			</Link>
+		</View>
 	);
 }

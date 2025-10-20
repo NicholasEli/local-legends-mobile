@@ -1,53 +1,40 @@
 import Meteor, { Mongo, withTracker } from '@meteorrn/core';
+import { BlurView } from 'expo-blur';
 import { Link, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, ScrollView, View, Image, Text } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { LinearGradient } from 'expo-linear-gradient';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import RunTimer from './RunTimer.jsx';
 import { get_users } from '../../api/users.js';
 import theme_variables from '../../helpers/theme-variables.js';
-import { get_active_heat } from '../../helpers/heat.js';
+import { get_active_heat, get_spectator_votes } from '../../helpers/heat.js';
+import { get_highest_run, get_average_run } from '../../helpers/run.js';
 import { hex_to_rgb } from '../../helpers/utils.js';
 
-const avatar_dims = theme_variables.gap * 4;
+const avatar_dims = theme_variables.gap * 3.5;
 
 const athlete_name_styles = {
-  color: '#000000',
+  color: '#fff',
   textTransform: 'uppercase',
-  fontSize: 25,
+  fontSize: 24,
   fontFamily: theme_variables.gothic
 };
 
 export default function Run({ event, heat, runs }) {
   const { width, height } = Dimensions.get('window');
-  const { hometown, socials, avatar } = runs.athlete.profile.athlete;
+  const { avatar, athlete } = runs.athlete.profile;
+  const { hometown, socials } = athlete;
 
   const run_total = function () {
     let max = 100;
     if (event?.enabled?.max_score) max = event.enabled.max_score;
 
     return max;
-  };
-
-  const calc_spectator_votes = function () {
-    if (!heat) return 0;
-
-    let total_votes = 0;
-    if (!heat.total_votes) {
-      total_votes = 0;
-    } else {
-      total_votes = heat.total_votes;
-    }
-
-    if (total_votes == 0) return 0;
-
-    total_votes = Math.ceil(runs.votes / total_votes);
-
-    return total_votes;
   };
 
   const get_details = function () {
@@ -63,6 +50,34 @@ export default function Run({ event, heat, runs }) {
       .flat();
 
     return details;
+  };
+
+  const location = function (hometown) {
+    let city = '';
+    let state = '';
+    let country = '';
+    let str = '';
+
+    if (hometown.city) {
+      const _city = hometown.city.toLowerCase();
+      if (_city != 'city') city = hometown.city;
+    }
+
+    if (hometown.state) {
+      const _state = hometown.state.toLowerCase();
+      if (state != 'state') state = hometown.state;
+    }
+
+    if (hometown.country) {
+      const _country = hometown.country.toLowerCase();
+      if (country != 'country') country = hometown.country;
+    }
+
+    if (city) str += city;
+    if (state) str += ` ${state}`;
+    if (city && state) str += `, ${country}`;
+
+    return str;
   };
 
   return (
@@ -84,7 +99,6 @@ export default function Run({ event, heat, runs }) {
           width: width / 2,
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'center',
           gap: theme_variables.gap,
           paddingLeft: theme_variables.gap
         }}
@@ -95,48 +109,36 @@ export default function Run({ event, heat, runs }) {
             height: avatar_dims,
             backgroundColor: '#ffffff',
             borderColor: runs.color,
-            borderWidth: 1,
+            borderWidth: 2,
             borderRadius: 100,
             overflow: 'hidden'
           }}
         >
-          {avatar?.url && (
-            <Image
-              style={{
-                width: avatar_dims,
-                height: avatar_dims
-              }}
-              resizeMode="cover"
-              source={{ uri: avatar.url }}
-            />
-          )}
-          {!avatar?.url && (
-            <Image
-              style={{
-                width: avatar_dims,
-                height: avatar_dims
-              }}
-              resizeMode="cover"
-              source={{ uri: theme_variables.logo }}
-            />
-          )}
+          <Image
+            style={{
+              width: avatar_dims,
+              height: avatar_dims
+            }}
+            resizeMode="cover"
+            source={{ uri: avatar ? avatar?.url : theme_variables.logo }}
+          />
         </View>
         <View>
-          <Text style={athlete_name_styles}>{runs.athlete.profile.firstname}</Text>
           <Text style={athlete_name_styles}>{runs.athlete.profile.lastname}</Text>
+          <Text style={athlete_name_styles}>{runs.athlete.profile.firstname}</Text>
           <Text
             style={{
-              color: theme_variables.gray600,
+              color: '#fff',
               textTransform: 'uppercase',
-              fontSize: 15,
+              fontSize: 14,
               fontFamily: theme_variables.gothic
             }}
           >
-            {hometown.city}, {hometown.state}
+            {location(hometown)}
           </Text>
           <View
             style={{
-              width: '75%',
+              width: '100%',
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'flex',
@@ -148,28 +150,14 @@ export default function Run({ event, heat, runs }) {
           >
             {Object.keys(socials).map((social, index) => {
               const url = socials[social];
-              const size = 15;
+              const size = 16;
 
               if (url) {
-                if (social == 'website') {
-                  return (
-                    <Link key={index} href={url}>
-                      <MaterialCommunityIcons name="web" size={size} color={runs.color} />
-                    </Link>
-                  );
-                }
-
-                if (social == 'x') {
-                  return (
-                    <Link key={index} href={url}>
-                      <FontAwesome5 name="twitter" size={size} color={runs.color} />
-                    </Link>
-                  );
-                }
+                if (social == 'website' || social == 'x') return <></>;
 
                 return (
                   <Link key={index} href={url}>
-                    <FontAwesome5 name={social} size={size} color={runs.color} />
+                    <FontAwesome5 name={social} size={size} color="#fff" />
                   </Link>
                 );
               }
@@ -185,16 +173,25 @@ export default function Run({ event, heat, runs }) {
           paddingRight: theme_variables.gap
         }}
       >
-        <Text
+        <View
           style={{
-            fontSize: 60,
-            textAlign: 'center',
-            fontFamily: theme_variables.gothic_condensed,
-            color: theme_variables.secondary
+            ...theme_variables.flex_center,
+            gap: theme_variables.gap / 2
           }}
         >
-          {parseFloat(runs.total).toFixed(2)}
-        </Text>
+          <MaterialIcons name="scoreboard" size={32} color="#fff" />
+          <Text
+            style={{
+              fontSize: 48,
+              textAlign: 'center',
+              fontFamily: theme_variables.gothic_condensed,
+              color: '#fff'
+            }}
+          >
+            {event.enabled.highest_score && get_highest_run(event, runs)}
+            {!event.enabled.highest_score && get_average_run(event, runs)}
+          </Text>
+        </View>
         <View
           style={{
             width: width / 2 - theme_variables.gap * 2,
@@ -207,36 +204,37 @@ export default function Run({ event, heat, runs }) {
             const percentage = (score / run_total()) * 100;
 
             return (
-              <View
-                key={index}
-                style={{
-                  width: '100%'
-                }}
-              >
+              <View key={index} style={{ width: '100%', marginTop: theme_variables.gap / 2 }}>
                 <Text
                   style={{
-                    fontSize: 15,
+                    fontSize: 16,
                     fontFamily: theme_variables.gothic,
-                    textTransform: 'uppercase'
+                    textTransform: 'uppercase',
+                    color: '#fff'
                   }}
                 >
                   {event.labels.run}: {run.run}
                 </Text>
-                <View
+                <BlurView
+                  intensity={10}
                   style={{
-                    height: 20,
+                    height: theme_variables.gap,
                     marginTop: theme_variables.gap / 3,
-                    backgroundColor: theme_variables.gray200
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                    borderRadius: 100,
+                    borderWidth: 1,
+                    borderColor: '#fff',
+                    overflow: 'hidden'
                   }}
                 >
                   <View
                     style={{
                       width: `${percentage}%`,
-                      height: 20,
+                      height: theme_variables.gap,
                       backgroundColor: theme_variables.primary
                     }}
                   />
-                </View>
+                </BlurView>
               </View>
             );
           })}
@@ -251,7 +249,7 @@ export default function Run({ event, heat, runs }) {
           >
             <Text
               style={{
-                fontSize: 15,
+                fontSize: 16,
                 fontFamily: theme_variables.gothic,
                 textTransform: 'uppercase',
                 color: theme_variables.yellow500
@@ -259,21 +257,26 @@ export default function Run({ event, heat, runs }) {
             >
               Spectator Votes
             </Text>
-            <View
+            <BlurView
+              intensity={10}
               style={{
-                height: 20,
+                height: theme_variables.gap,
                 marginTop: theme_variables.gap / 3,
-                backgroundColor: theme_variables.gray200
+                backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                borderRadius: 100,
+                borderWidth: 1,
+                borderColor: theme_variables.yellow500,
+                overflow: 'hidden'
               }}
             >
               <View
                 style={{
-                  width: `${calc_spectator_votes()}%`,
-                  height: 20,
+                  width: `${get_spectator_votes(heat, runs)}%`,
+                  height: theme_variables.gap,
                   backgroundColor: theme_variables.yellow500
                 }}
               />
-            </View>
+            </BlurView>
           </View>
         )}
       </View>
@@ -282,17 +285,17 @@ export default function Run({ event, heat, runs }) {
       <View
         style={{
           width: '100%',
-          height: 20,
+          height: 24,
           paddingLeft: theme_variables.gap,
           paddingRight: theme_variables.gap
         }}
       >
         <LinearGradient
-          colors={['#ffffff', hex_to_rgb(runs.color)]}
+          colors={['transparent', hex_to_rgb(runs.color)]}
           locations={[0, 0.75]}
           start={{ x: 0.75, y: 0 }}
           end={{ x: 0, y: 1 }}
-          style={{ width, height: 20, position: 'absolute', zIndex: 1 }}
+          style={{ width, height: 16, position: 'absolute', zIndex: 1 }}
         />
 
         <View style={{ position: 'relative', zIndex: 2 }}>
@@ -307,8 +310,8 @@ export default function Run({ event, heat, runs }) {
                 <Text
                   style={{
                     fontFamily: theme_variables.gothic,
-                    fontSize: 15,
-                    color: '#ffffff',
+                    fontSize: 12,
+                    color: '#fff',
                     letterSpacing: 1
                   }}
                 >

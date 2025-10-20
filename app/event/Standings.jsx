@@ -2,65 +2,37 @@ import Meteor, { Mongo, withTracker } from '@meteorrn/core';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, ScrollView, View, Image, Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import RunTimer from './RunTimer.jsx';
 import Run from './Run.jsx';
 import theme_variables from '../../helpers/theme-variables.js';
 import { get_users } from '../../api/users.js';
+import { is_event_complete, get_event_standings } from '../../helpers/event.js';
 import { get_active_heat } from '../../helpers/heat.js';
 
 const Events = new Mongo.Collection('events');
 
+const avatar_dims = theme_variables.gap * 4;
 const heat_title_styles = {
-  fontSize: 40,
-  color: theme_variables.primary,
-  // textShadowColor: 'rgba(193, 40, 65, 1)',
-  // textShadowOffset: { width: 0, height: 0 },
-  // textShadowRadius: 5,
-  // letterSpacing: 1,
+  fontSize: 32,
+  color: '#fff',
   textTransform: 'uppercase',
-  fontFamily: theme_variables.gothic
-};
-
-const athlete_name_styles = {
-  color: '#000000',
-  textTransform: 'uppercase',
-  fontSize: 30,
   fontFamily: theme_variables.gothic
 };
 
 function Heats({ user, event, live_event, loading }) {
   const [athletes, setAthletes] = useState([]);
-  const [guest_athletes, setGuestAthletes] = useState([]);
 
-  useEffect(() => {
-    (async () => {
-      const athlete_ids = event.athletes
-        .filter((athlete) => athlete.athlete_id)
-        .map((athlete) => athlete.athlete_id);
-
-      const req_athletes = await get_users(athlete_ids);
-      const req_guest_athletes = event.athletes.filter((athlete) => athlete.guest_id);
-
-      setAthletes(req_athletes);
-      setGuestAthletes(req_guest_athletes);
-    })();
-  }, []);
-
-  if (loading) return <Text>Loading…</Text>;
-
-  const heat = get_active_heat(live_event, athletes, guest_athletes);
-
-  if (!heat || (heat && heat.runs.length == 0)) {
+  /** UI **/
+  const ComingUp = function () {
     return (
-      <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+      <>
         <View
           style={{
             width: '100%',
             display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: theme_variables.gap
+            padding: theme_variables.gap,
+            ...theme_variables.flex_between
           }}
         >
           <Text style={heat_title_styles}>Coming Up</Text>
@@ -73,9 +45,8 @@ function Heats({ user, event, live_event, loading }) {
         >
           <View
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              gap: theme_variables.gap
+              gap: theme_variables.gap,
+              ...theme_variables.flex_row
             }}
           >
             {athletes.map((athlete, index) => {
@@ -83,114 +54,169 @@ function Heats({ user, event, live_event, loading }) {
                 <View
                   key={index}
                   style={{
-                    width: 80,
-                    height: 80,
-                    backgroundColor: '#ffffff',
-                    borderColor: theme_variables.primary,
-                    borderWidth: 1,
+                    width: avatar_dims,
+                    height: avatar_dims,
+                    borderColor: '#fff',
+                    borderWidth: 2,
                     borderRadius: 100,
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    backgroundColor: '#fff'
                   }}
                 >
-                  {athlete.profile?.avatar?.url && (
-                    <Image
-                      style={{
-                        width: 80,
-                        height: 80
-                      }}
-                      resizeMode="cover"
-                      source={{ uri: athlete.profile.avatar.url }}
-                    />
-                  )}
-                  {!athlete.profile?.avatar?.url && (
-                    <Image
-                      style={{
-                        width: 80,
-                        height: 80
-                      }}
-                      source={{ uri: theme_variables.logo }}
-                    />
-                  )}
+                  <Image
+                    style={{
+                      width: avatar_dims,
+                      height: avatar_dims
+                    }}
+                    resizeMode="cover"
+                    source={{
+                      uri: athlete.profile.avatar
+                        ? athlete.profile.avatar.url
+                        : theme_variables.logo
+                    }}
+                  />
                 </View>
               );
             })}
           </View>
         </ScrollView>
-      </View>
+      </>
     );
-  }
+  };
+
+  const ActiveHeat = function ({ heat, timer = true }) {
+    return (
+      <>
+        <View
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: theme_variables.gap
+          }}
+        >
+          <Text style={heat_title_styles}>
+            {event.labels.heat}
+            {heat.name ? `: ${heat.name}` : `: ${heat.heat}`}
+          </Text>
+
+          {timer && (
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center'
+              }}
+            >
+              <RunTimer
+                time={heat.timer.time}
+                start={heat.timer.start}
+                seconds={heat.timer.seconds}
+                onComplete={() => null}
+              />
+              <View
+                style={{
+                  ...theme_variables.flex_center,
+                  gap: theme_variables.gap / 4
+                }}
+              >
+                <MaterialCommunityIcons name="scoreboard" size={16} color="#fff" />
+                <Text
+                  style={{
+                    fontSize: 16,
+                    textTransform: 'uppercase',
+                    fontFamily: theme_variables.gothic,
+                    color: '#fff'
+                  }}
+                >
+                  Remaining {event.labels.run} time
+                </Text>
+              </View>
+            </View>
+          )}
+        </View>
+        {/* Runs */}
+        <ScrollView
+          style={{
+            width: '100%',
+            flex: 1
+          }}
+        >
+          {heat.runs.map((runs, index) => {
+            if (runs.athlete) {
+              return <Run key={index} event={live_event} heat={heat} runs={runs} />;
+            }
+          })}
+        </ScrollView>
+      </>
+    );
+  };
+
+  const EventComplete = function () {
+    const heats = get_event_standings(live_event, athletes);
+
+    return (
+      <>
+        <View
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: theme_variables.gap
+          }}
+        >
+          <Text style={{ ...heat_title_styles, fontSize: 36 }}>Final</Text>
+        </View>
+
+        {/* Heats */}
+        <ScrollView
+          style={{
+            width: '100%',
+            flex: 1
+          }}
+        >
+          {heats.map((heat) => {
+            return <ActiveHeat key={heat.id} heat={heat} timer={false} />;
+          })}
+        </ScrollView>
+      </>
+    );
+  };
+
+  useEffect(() => {
+    (async () => {
+      const athlete_ids = event.athletes
+        .filter((athlete) => athlete.athlete_id)
+        .map((athlete) => athlete.athlete_id);
+
+      const req_athletes = await get_users(athlete_ids);
+
+      setAthletes(req_athletes);
+    })();
+  }, []);
+
+  if (loading) return <Text>Loading…</Text>;
+
+  const event_complete = is_event_complete(live_event);
+  const heat = get_active_heat(live_event, athletes);
 
   return (
     <View
       style={{
-        display: 'flex',
-        flexDirection: 'column',
+        marginTop: theme_variables.gap * 3,
         flex: 1,
-        backgroundColor: '#ffffff'
+        ...theme_variables.flex_column
       }}
     >
-      <View
-        style={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: theme_variables.gap
-        }}
-      >
-        {heat.name && (
-          <Text style={heat_title_styles}>
-            {heat.complete ? 'Final' : event.labels.heat}: {heat.name}
-          </Text>
-        )}
-
-        {!heat.name && (
-          <Text style={heat_title_styles}>
-            {heat.complete ? 'Final' : event.labels.heat}: {heat.heat}
-          </Text>
-        )}
-
-        {/* Title */}
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            textAlign: 'center'
-          }}
-        >
-          <RunTimer
-            time={heat.timer.time}
-            start={heat.timer.start}
-            seconds={heat.timer.seconds}
-            onComplete={() => null}
-          />
-          <Text
-            style={{
-              fontSize: 15,
-              textTransform: 'uppercase',
-              fontFamily: theme_variables.gothic
-            }}
-          >
-            Remaining {event.labels.run} time
-          </Text>
-        </View>
-      </View>
-      {/* Runs */}
-      <ScrollView
-        style={{
-          width: '100%',
-          flex: 1
-        }}
-      >
-        {heat.runs.map((runs, index) => {
-          if (!runs.athlete) return <></>;
-
-          return <Run key={index} event={live_event} heat={heat} runs={runs} />;
-        })}
-      </ScrollView>
+      {!event_complete && heat && <ActiveHeat heat={heat} />}
+      {!event_complete && !heat && <ComingUp />}
+      {event_complete && <EventComplete />}
     </View>
   );
 }

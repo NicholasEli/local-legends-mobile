@@ -6,13 +6,14 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
-import { Notifications } from 'react-native-notifications';
+import * as Notifications from 'expo-notifications';
 import {
-  Alert,
   ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -43,6 +44,15 @@ import SEX from '../../types/SEX.js';
 import STANCE from '../../types/STANCE.js';
 import SOCIALS from '../../types/SOCIALS.js';
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true
+  })
+});
+
 export default function Athlete() {
   const router = useRouter();
   const { width, height } = Dimensions.get('window');
@@ -64,9 +74,9 @@ export default function Athlete() {
     height: avatar_width,
     borderRadius: 100,
     borderColor: '#fff',
-    borderWidth: 1,
+    borderWidth: 2,
     overflow: 'hidden',
-    backgroundColor: '#ffffff'
+    backgroundColor: '#000'
   };
 
   const avatar_img_styles = {
@@ -251,8 +261,6 @@ export default function Athlete() {
   };
 
   const follow = async function () {
-    console.clear();
-
     if (!account) {
       Alert.alert('Account Required', 'You must be logged in to follow this athlete', [
         { text: 'Cancel', style: 'cancel' },
@@ -273,6 +281,36 @@ export default function Athlete() {
     router.push('/');
   };
 
+  const request_push_notification_permission = async () => {
+    console.clear();
+    const tokenListener = Notifications.addPushTokenListener((token) => {
+      console.log('Device Push Token Listener:', token.data);
+    });
+
+    // Ask for permissions
+    console.log('Ask Permissions');
+    const { status: exiting_status } = await Notifications.getPermissionsAsync();
+    let final_status = exiting_status;
+
+    console.log('exiting_status');
+    if (exiting_status !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      final_status = status;
+    }
+
+    console.log('final_status');
+    if (final_status !== 'granted') {
+      console.log('Push notification permission denied');
+      return;
+    }
+    console.log('token');
+    // Get the Expo push token
+    const token = await Notifications.getDevicePushTokenAsync();
+    console.log('Device Push Token:', token);
+
+    // Optionally send the token to your server here
+  };
+
   useEffect(() => {
     (async () => {
       const req_user = await get_athlete({ id: params.id });
@@ -290,28 +328,16 @@ export default function Athlete() {
       setEvents(req_events);
 
       const token = await get_auth_token();
-
       if (token) {
         const req_account = await auth.user(token);
         if (req_account?._id) {
           setAccount(req_account);
-
-          Notifications.events().registerRemoteNotificationsRegistered((event) => {
-            // Send this token to your Meteor backend
-            console.log('Device Token Received', event.deviceToken);
-          });
-
-          Notifications.events().registerNotificationReceivedForeground(
-            (notification, completion) => {
-              console.log('Notification received in foreground:', notification);
-              completion({ alert: true, sound: true, badge: false });
-            }
-          );
+          //request_push_notification_permission();
         }
 
         const req_purchases = await get_purchases({ token });
 
-        if (req_purchases) {
+        if (req_purchases && !req_purchases.error) {
           let purchased_vods = req_purchases
             .filter((purchase) => purchase.vod_id)
             .map((purchase) => purchase.vod_id);
@@ -354,12 +380,31 @@ export default function Athlete() {
             backgroundColor: 'rgba(255, 255, 255, 0.25)'
           }}
         >
-          <ActivityIndicator size="large" color={theme_variables.primary} />
+          <ActivityIndicator size="large" color="#fff" />
         </BlurView>
       )}
       <ScrollView style={{ flex: 1 }}>
         <Pressable style={{ position: 'relative ' }} onPress={() => set_image('banner')}>
-          <Banner uri={user.profile.athlete?.banner?.url} />
+          <View
+            style={{
+              backgroundColor: '#000',
+              borderBottomWidth: 2,
+              borderColor: '#fff'
+            }}
+          >
+            <Banner
+              uri={
+                user.profile.athlete?.banner?.url
+                  ? user.profile.athlete.banner.url
+                  : theme_variables.banner
+              }
+              styles={{
+                width: '100%',
+                borderRadius: 0
+              }}
+              linear_gradient={false}
+            />
+          </View>
           {is_user && (
             <View
               style={{
@@ -462,11 +507,7 @@ export default function Athlete() {
               if (url && social == 'website') {
                 return (
                   <Link key={index} href={url}>
-                    <MaterialCommunityIcons
-                      name="web"
-                      size={size}
-                      color={theme_variables.primary}
-                    />
+                    <MaterialCommunityIcons name="web" size={size} color="#fff" />
                   </Link>
                 );
               }
@@ -474,7 +515,7 @@ export default function Athlete() {
               if (url && social == 'x') {
                 return (
                   <Link key={index} href={url}>
-                    <FontAwesome5 name="twitter" size={size} color={theme_variables.primary} />
+                    <FontAwesome5 name="twitter" size={size} color="#fff" />
                   </Link>
                 );
               }
@@ -482,7 +523,7 @@ export default function Athlete() {
               if (url) {
                 return (
                   <Link key={index} href={url}>
-                    <FontAwesome5 name={social} size={size} color={theme_variables.primary} />
+                    <FontAwesome5 name={social} size={size} color="#fff" />
                   </Link>
                 );
               }
@@ -591,16 +632,19 @@ export default function Athlete() {
                 >
                   Upload. Share. Grow.
                 </Text>
-                <Text
-                  style={{
-                    color: '#ffffff',
-                    fontSize: 14,
-                    lineHeight: 20
-                  }}
-                >
-                  Upload and share your video content across the Local Legends network. To manage
-                  your creator account and publishing tools, please visit our website.
-                </Text>
+
+                {!user.stripe_account_id && (
+                  <Text
+                    style={{
+                      color: '#ffffff',
+                      fontSize: 14,
+                      lineHeight: 20
+                    }}
+                  >
+                    Upload and share your video content across the Local Legends network. To manage
+                    your creator account and publishing tools, please visit our website.
+                  </Text>
+                )}
                 <Link
                   href="https://locallegends.live/login"
                   style={{
@@ -619,7 +663,12 @@ export default function Athlete() {
                       alignItems: 'center'
                     }}
                   >
-                    <Text style={{ ...button_text_styles({}) }}>Get Started</Text>
+                    {!user.stripe_account_id && (
+                      <Text style={{ ...button_text_styles({}) }}>Get Started</Text>
+                    )}
+                    {user.stripe_account_id && (
+                      <Text style={{ ...button_text_styles({}) }}>Upload Content</Text>
+                    )}
                   </View>
                 </Link>
               </View>
@@ -832,61 +881,67 @@ export default function Athlete() {
             </View>
 
             <TextInput
-              style={{ ...input_styles, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', marginTop: theme_variables.gap }}
               onChangeText={(value) => set_profile_fields('firstname', value)}
               value={firstname}
               placeholder="First Name"
               keyboardType="default"
               inputMode="text"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <TextInput
-              style={{ ...input_styles, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', marginTop: theme_variables.gap }}
               onChangeText={(value) => set_profile_fields('lastname', value)}
               value={lastname}
               placeholder="Last Name"
               keyboardType="default"
               inputMode="text"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <TextInput
               editable
-              style={{ ...input_styles, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', marginTop: theme_variables.gap }}
               onChangeText={(value) => set_athlete_fields('bio', value)}
               multiline
               numberOfLines={4}
               maxLength={400}
               value={bio}
               placeholder="Bio"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <TextInput
-              style={{ ...input_styles, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', marginTop: theme_variables.gap }}
               onChangeText={(value) => set_hometown_fields('city', value)}
               value={hometown.city}
               placeholder="City"
               keyboardType="default"
               inputMode="text"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <TextInput
-              style={{ ...input_styles, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', marginTop: theme_variables.gap }}
               onChangeText={(value) => set_hometown_fields('state', value)}
               value={hometown.state}
               placeholder="State/Province"
               keyboardType="default"
               inputMode="text"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <TextInput
               onChangeText={(value) => set_hometown_fields('country', value)}
-              style={{ ...input_styles, width: 75, marginTop: theme_variables.gap }}
+              style={{ ...input_styles, color: '#000', width: 75, marginTop: theme_variables.gap }}
               value={hometown.country}
               autoCapitalize="characters"
               maxLength={2}
               placeholder="US"
               keyboardType="default"
               inputMode="text"
+              placeholderTextColor={theme_variables.gray900}
             />
 
             <View style={divider_styles} />
@@ -1004,13 +1059,19 @@ export default function Athlete() {
                   <FontAwesome5 name={social.VALUE} size={20} color={theme_variables.gray900} />
 
                   <TextInput
-                    style={{ ...input_styles, width: '90%', marginTop: theme_variables.gap }}
+                    style={{
+                      ...input_styles,
+                      color: '#000',
+                      width: '90%',
+                      marginTop: theme_variables.gap
+                    }}
                     onChangeText={(value) => set_social_fields(social.VALUE, value)}
                     value={socials[social.VALUE]}
                     placeholder={key}
                     keyboardType="url"
                     inputMode="url"
                     autoCapitalize="none"
+                    placeholderTextColor={theme_variables.gray900}
                   />
                 </View>
               );

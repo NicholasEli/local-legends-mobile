@@ -1,8 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
-import { Link, useLocalSearchParams } from 'expo-router';
+import { Link, useRouter, useLocalSearchParams } from 'expo-router';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
   Alert,
   Animated,
@@ -15,20 +14,33 @@ import {
   Image,
   Text
 } from 'react-native';
+import EJSON from 'ejson';
 import Banner from '../../components/Banner.js';
+import Button from '../../components/Button.jsx';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Entypo from '@expo/vector-icons/Entypo';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
 import RenderHtml from 'react-native-render-html';
-import { get_vod_preview, get_vod_full } from '../../api/video-on-demand.js';
-import { get_purchase } from '../../api/purchase.js';
 import auth from '../../api/auth.js';
+import {
+  get_vod_preview,
+  get_vod_full,
+  set_vod_like,
+  set_vod_dislike
+} from '../../api/video-on-demand.js';
+import { set_athlete_follow } from '../../api/athlete.js';
+import { set_organization_follow } from '../../api/organization.js';
+import { get_purchase } from '../../api/purchase.js';
 import { get_user } from '../../api/user.js';
-import theme_variables from '../../helpers/theme-variables.js';
 import { rating } from '../../helpers/vod.js';
 import { get_auth_token } from '../../helpers/auth.js';
+import theme_variables from '../../helpers/theme-variables.js';
 import dayjs from 'dayjs';
 
 export default function VOD() {
+  const router = useRouter();
   const { width, height } = Dimensions.get('window');
   const blur_view_animation = useRef(new Animated.Value(1)).current;
 
@@ -42,45 +54,24 @@ export default function VOD() {
 
   const avatar_styles = {
     width: 60,
-    height: 60
+    height: 60,
+    borderWidth: 1,
+    borderRadius: 100,
+    borderColor: '#fff',
+    backgroundColor: '#000',
+    overflow: 'hidden'
   };
 
-  const rating_styles = {
+  const author_styles = {
+    color: '#fff',
     fontSize: 20,
-    fontFamily: theme_variables.gothic,
-    color: '#ffffff',
-    textTransform: 'uppercase'
+    fontFamily: theme_variables.gothic
   };
 
-  const like_styles = {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#0000000'
-  };
-
-  const like_container_styles = {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: theme_variables.gap / 2,
-    paddingTop: theme_variables.gap / 2,
-    paddingBottom: theme_variables.gap / 2,
-    paddingLeft: theme_variables.gap,
-    paddingRight: theme_variables.gap,
-    backgroundColor: '#000000',
-    borderRadius: theme_variables.border_radius
-  };
-
-  const like_text_styles = {
-    color: '#ffffff',
-    fontSize: 20,
-    fontFamily: theme_variables.gothic,
-    textTransform: 'uppercase',
-    textAlign: 'center'
+  const details_styles = {
+    color: '#fff',
+    fontSize: 12,
+    lineHeight: 12
   };
 
   const btn_container = {
@@ -119,16 +110,82 @@ export default function VOD() {
 
   const purchase_vod = function () {
     Alert.alert(
-      'Purcahse VOD',
-      'VODs can be purchased through your account on www.locallegends.live',
+      'Access VOD',
+      'VODs can be accessed through your account on www.locallegends.live',
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Purchase VOD',
-          onPress: () => Linking.openURL(`https://locallegends.live/video-on-demand/${preview._id}`)
+          text: 'Access VOD',
+          onPress: () =>
+            Linking.openURL(`https://locallegends.live/video-on-demand/${preview._id}?app=true`)
         }
       ]
     );
+  };
+
+  const like_vod = async function (obj) {
+    if (!obj || !current_user) return null;
+
+    const req_like = await set_vod_like(obj._id, current_user._id);
+
+    let _vod = null;
+    if (preview && !vod) _vod = EJSON.clone({ ...preview });
+    if (vod) _vod = EJSON.clone({ ...vod });
+
+    _vod.dislikes[current_user._id] = false;
+    _vod.likes[current_user._id] = true;
+
+    if (preview && !vod) setPreview(_vod);
+    if (vod) setVOD(_vod);
+  };
+
+  const dislike_vod = async function (obj) {
+    if (!obj || !current_user) return null;
+
+    const req_dislike = await set_vod_dislike(obj._id, current_user._id);
+
+    let _vod = null;
+    if (preview && !vod) _vod = EJSON.clone({ ...preview });
+    if (vod) _vod = EJSON.clone({ ...vod });
+
+    _vod.dislikes[current_user._id] = true;
+    _vod.likes[current_user._id] = false;
+
+    if (preview && !vod) setPreview(_vod);
+    if (vod) setVOD(_vod);
+  };
+
+  const follow = async function () {
+    if (!user) return null;
+
+    if (!current_user) {
+      Alert.alert('Hold On...', 'You musted be logged in to follow others', [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Access VOD',
+          onPress: () => ({ text: 'Login/Sign Up', onPress: () => router.push('/signup') })
+        }
+      ]);
+      return null;
+    }
+
+    let req_follow = null;
+    if (user.profile.athlete) {
+      req_follow = await set_athlete_follow({ id: user._id, user_id: current_user._id });
+    }
+
+    if (user.profile.organization) {
+      req_follow = await set_organization_follow({ id: user._id, user_id: current_user._id });
+    }
+
+    if (req_follow != null) {
+      const _user = EJSON.clone({ ...user });
+      _user.profile.followers[current_user._id] = req_follow;
+      setUser(_user);
+      return req_follow;
+    }
+
+    return false;
   };
 
   /** UI **/
@@ -138,71 +195,348 @@ export default function VOD() {
     return (
       <View
         style={{
-          borderColor: theme_variables.primary,
-          borderBottomWidth: 2,
-          backgroundColor: '#000000',
-          borderColor: theme_variables.primary,
-          borderBottomWidth: 2
+          width: '100%',
+          ...theme_variables.flex_center,
+          ...theme_variables.box_shadow
         }}
       >
-        <Animated.View
+        <View
           style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            zIndex: 2,
-            opacity: blur_view_animation,
-            pointerEvents: 'none'
+            width: width - theme_variables.gap,
+            borderRadius: theme_variables.border_radius,
+            overflow: 'hidden'
           }}
         >
-          <BlurView
-            intensity={8}
+          <Animated.View
             style={{
               width: '100%',
               height: '100%',
-              ...theme_variables.flex_center,
-              flexDirection: 'column',
-              gap: theme_variables.gap,
-              backgroundColor: 'rgba(0,0,0,0.5)'
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              zIndex: 2,
+              opacity: blur_view_animation,
+              pointerEvents: 'none'
             }}
           >
-            <Image
-              style={{
-                width: 64,
-                height: 64
-              }}
-              source={{ uri: theme_variables.logo_light }}
-            />
-            <Text
+            <BlurView
+              intensity={8}
               style={{
                 width: '100%',
-                color: '#ffffff',
-                fontSize: 20,
-                fontFamily: theme_variables.gothic,
-                textTransform: 'uppercase',
-                textAlign: 'center'
+                height: '100%',
+                ...theme_variables.flex_center,
+                flexDirection: 'column',
+                gap: theme_variables.gap,
+                backgroundColor: 'rgba(0,0,0,0.5)'
               }}
             >
-              Click the here to start playing
-            </Text>
-          </BlurView>
-        </Animated.View>
+              <Image
+                style={{
+                  width: 64,
+                  height: 64
+                }}
+                source={{ uri: theme_variables.logo_light }}
+              />
+              <Text
+                style={{
+                  width: '100%',
+                  color: '#ffffff',
+                  fontSize: 20,
+                  fontFamily: theme_variables.gothic,
+                  textTransform: 'uppercase',
+                  textAlign: 'center'
+                }}
+              >
+                Click the here to start playing
+              </Text>
+            </BlurView>
+          </Animated.View>
 
-        <VideoView
-          player={player}
-          posterSource={{ uri: poster_uri }}
-          allowsFullscreen
-          nativeControls
-          resizeMode="contain"
-          style={{
-            width: '100%',
-            aspectRatio: 16 / 9
-          }}
-        />
+          <VideoView
+            player={player}
+            posterSource={{ uri: poster_uri }}
+            allowsFullscreen
+            nativeControls
+            resizeMode="contain"
+            style={{
+              width: '100%',
+              aspectRatio: 16 / 9
+            }}
+          />
+        </View>
       </View>
     );
+  };
+
+  const Title = function () {
+    return (
+      <Text
+        style={{
+          fontSize: 32,
+          fontFamily: theme_variables.gothic,
+          color: '#ffffff'
+        }}
+      >
+        {obj.title}
+      </Text>
+    );
+  };
+
+  const Avatar = function () {
+    return (
+      <View
+        style={{
+          width: avatar_styles.width,
+          height: avatar_styles.height,
+          ...theme_variables.box_shadow
+        }}
+      >
+        {!user && preview?.credit?.avatar && (
+          <Image style={avatar_styles} source={{ uri: preview.credit.avatar }} />
+        )}
+        {user?.profile?.avatar && (
+          <Image style={avatar_styles} source={{ uri: user.profile.avatar.url }} />
+        )}
+        {user && !user?.profile?.avatar && (
+          <Image style={avatar_styles} source={{ uri: theme_variables.logo_light }} />
+        )}
+      </View>
+    );
+  };
+
+  const PresentedBy = function () {
+    if (!user && obj.credit) {
+      return <Text style={author_styles}>{obj.credit.name}</Text>;
+    }
+
+    if (user?.profile?.organization) {
+      return <Text style={author_styles}>{user.profile.organization.name}</Text>;
+    }
+
+    if (user?.profile?.athlete) {
+      return (
+        <Link href={`/athlete/${user._id}`}>
+          <Text style={author_styles}>
+            {user.profile.firstname} {user.profile.lastname}
+          </Text>
+        </Link>
+      );
+    }
+
+    return <Text style={author_styles}>Local Legends Live</Text>;
+  };
+
+  const Category = function ({ obj }) {
+    return <>{obj?.sport && <Text style={details_styles}>{obj.sport}</Text>}</>;
+  };
+
+  const ReleaseDate = function ({ obj }) {
+    return (
+      <>
+        {obj?.created_at && (
+          <Text style={details_styles}>{dayjs(obj.created_at).format('MM.DD.YYYY')}</Text>
+        )}
+      </>
+    );
+  };
+
+  const Duration = function ({ obj }) {
+    if (!obj?.duration) return <></>;
+
+    let total_time = 0;
+    if (obj?.duration) total_time = parseInt(obj.duration);
+
+    if (!total_time) return <></>;
+
+    return (
+      <View
+        style={{
+          ...theme_variables.flex,
+          flexDirection: 'row',
+          gap: theme_variables.gap / 2
+        }}
+      >
+        <Text style={details_styles}>
+          {total_time > 60 ? `${total_time / 60} Mins` : `${total_time} Secs`}
+        </Text>
+      </View>
+    );
+  };
+
+  const Rating = function ({ obj }) {
+    return (
+      <BlurView
+        intensity={5}
+        style={{
+          width: theme_variables.gap * 7,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          overflow: 'hidden',
+          borderRadius: 100,
+          backgroundColor: 'rgba(255,255,255,0.25)'
+        }}
+      >
+        <Pressable
+          onPress={() => dislike_vod(obj)}
+          style={{
+            ...theme_variables.padding_half,
+            ...theme_variables.padding_horizontal
+          }}
+        >
+          {current_user && (
+            <>
+              {obj.dislikes[current_user._id] && (
+                <Ionicons name="thumbs-down-sharp" size={20} color="#fff" />
+              )}
+              {!obj.dislikes[current_user._id] && (
+                <Feather name="thumbs-down" size={20} color="#fff" />
+              )}
+            </>
+          )}
+
+          {!current_user && <Ionicons name="thumbs-down-sharp" size={20} color="#fff" />}
+        </Pressable>
+
+        <View
+          style={{
+            width: 1,
+            height: '75%',
+            backgroundColor: '#fff'
+          }}
+        />
+
+        <Pressable
+          onPress={() => like_vod(obj)}
+          style={{
+            ...theme_variables.padding_half,
+            ...theme_variables.padding_horizontal
+          }}
+        >
+          {current_user && (
+            <>
+              {obj.likes[current_user._id] && (
+                <Ionicons name="thumbs-up-sharp" size={20} color="#fff" />
+              )}
+              {!obj.likes[current_user._id] && <Feather name="thumbs-up" size={20} color="#fff" />}
+            </>
+          )}
+
+          {!current_user && <Ionicons name="thumbs-up-sharp" size={20} color="#fff" />}
+
+          {/*<Text style={details_styles}>{rating(obj)}%</Text>*/}
+        </Pressable>
+      </BlurView>
+    );
+  };
+
+  const Follow = function () {
+    return (
+      <BlurView
+        intensity={5}
+        style={{
+          width: theme_variables.gap * 7,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          overflow: 'hidden',
+          borderRadius: 100,
+          backgroundColor: 'rgba(255,255,255,0.25)'
+        }}
+      >
+        <Pressable
+          onPress={follow}
+          style={{
+            ...theme_variables.flex,
+            ...theme_variables.padding_half,
+            ...theme_variables.padding_horizontal,
+            flexDirection: 'row',
+            gap: theme_variables.gap / 2
+          }}
+        >
+          {!current_user && (
+            <>
+              <Text
+                style={{
+                  color: '#fff'
+                }}
+              >
+                Follow
+              </Text>
+              <AntDesign name="plus" size={theme_variables.gap} color="#ffffff" />
+            </>
+          )}
+
+          {current_user && !user.profile.followers[current_user._id] && (
+            <>
+              <Text
+                style={{
+                  color: '#fff'
+                }}
+              >
+                Follow
+              </Text>
+              <AntDesign name="plus" size={theme_variables.gap} color="#ffffff" />
+            </>
+          )}
+
+          {current_user && user.profile.followers[current_user._id] && (
+            <>
+              <Text
+                style={{
+                  color: '#fff'
+                }}
+              >
+                Following
+              </Text>
+              <AntDesign name="check" size={theme_variables.gap} color="#ffffff" />
+            </>
+          )}
+        </Pressable>
+      </BlurView>
+    );
+  };
+
+  const PurchaseButton = function () {
+    if (user?._id == current_user?._id) return <></>;
+
+    if (obj.price > 0 && purchase?._id) {
+      return (
+        <Button>
+          <Text
+            style={{
+              color: '#fff',
+              textTransform: 'uppercase',
+              fontFamily: theme_variables.gothic,
+              fontSize: 24
+            }}
+          >
+            Owned
+          </Text>
+        </Button>
+      );
+    }
+
+    if (obj.price > 0 && !purchase?._id) {
+      return (
+        <Button callback={purchase_vod} gradient={true}>
+          <Text
+            style={{
+              color: '#fff',
+              textTransform: 'uppercase',
+              fontFamily: theme_variables.gothic,
+              fontSize: 24
+            }}
+          >
+            Get Access
+          </Text>
+        </Button>
+      );
+    }
+
+    return <></>;
   };
 
   useEffect(() => {
@@ -259,195 +593,135 @@ export default function VOD() {
   if (!vod) obj = preview;
 
   return (
-    <>
-      <LinearGradient
-        colors={['rgba(56, 57, 51, 1)', 'rgba(24, 24, 27, 1)']}
-        locations={[0, 0.75]}
-        start={{ x: 0.8, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={{ width, height, position: 'absolute', zIndex: 1 }}
-      />
-      <View style={{ flex: 1, position: 'relative', zIndex: 2 }}>
-        {vod && <Player uri={vod.src.url} poster_uri={vod.poster.url} />}
-        {!vod && (
+    <View style={{ flex: 1, position: 'relative', zIndex: 2 }}>
+      {vod && <Player uri={vod.src.url} poster_uri={vod.poster.url} />}
+      {!vod && (
+        <View
+          style={{
+            width: '100%',
+            ...theme_variables.flex_center,
+            ...theme_variables.box_shadow
+          }}
+        >
           <Image
             source={{ uri: obj.poster.url }}
             style={{
-              width,
+              width: width - theme_variables.gap,
               height: width * theme_variables.ratio_16_9,
               backgroundColor: '#000000',
-              borderColor: theme_variables.primary,
-              borderBottomWidth: 2
-            }}
-          />
-        )}
-        {/* Title */}
-        <View
-          style={{
-            width,
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: theme_variables.gap,
-            ...theme_variables.padding,
-            paddingBottom: 0
-          }}
-        >
-          {/* Avatar */}
-          <View
-            style={{
-              width: avatar_styles.width,
-              height: avatar_styles.height,
-              borderRadius: 100,
-              borderWidth: 2,
-              borderColor: theme_variables.primary,
-              backgroundColor: '#ffffff',
+              borderRadius: theme_variables.border_radius,
               overflow: 'hidden'
             }}
-          >
-            {!user && preview?.credit?.avatar && (
-              <Image style={avatar_styles} source={{ uri: preview.credit.avatar }} />
-            )}
-            {user?.profile?.avatar && (
-              <Image style={avatar_styles} source={{ uri: user.profile.avatar.url }} />
-            )}
-            {!user?.profile?.avatar && (
-              <Image style={avatar_styles} source={{ uri: theme_variables.logo }} />
-            )}
-          </View>
-
-          {/* Title / Rating */}
-          <View
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column'
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 30,
-                fontFamily: theme_variables.gothic,
-                color: '#ffffff'
-              }}
-            >
-              {obj.title}
-            </Text>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ ...rating_styles, color: theme_variables.green300 }}>
-                {rating(obj)} {'% Rating'}
-              </Text>
-              <Text style={rating_styles}> | </Text>
-              <Text style={rating_styles}>{dayjs(obj.created_at).format('MMMM DD, YYYY')}</Text>
-            </View>
-          </View>
+          />
         </View>
-
-        {/* Like / Dislike */}
+      )}
+      {/* Title */}
+      <View
+        style={{
+          width,
+          display: 'flex',
+          flexDirection: 'row',
+          gap: theme_variables.gap,
+          ...theme_variables.padding,
+          paddingBottom: 0
+        }}
+      >
         <View
           style={{
-            width,
+            flex: 1,
             display: 'flex',
-            flexDirection: 'row',
-            gap: theme_variables.gap,
-            marginTop: theme_variables.gap * 2,
-            ...theme_variables.padding_horizontal
+            flexDirection: 'column'
           }}
         >
-          <Pressable style={like_styles}>
-            <View style={like_container_styles}>
-              <Text style={{ ...like_text_styles, color: theme_variables.red500 }}>Dislike</Text>
-              <Entypo name="thumbs-down" size={20} color={theme_variables.red500} />
-            </View>
-          </Pressable>
+          <Title />
 
-          <Pressable style={like_styles}>
-            <View style={like_container_styles}>
-              <Text style={{ ...like_text_styles, color: theme_variables.yellow500 }}>Like</Text>
-              <Entypo name="thumbs-up" size={20} color={theme_variables.yellow500} />
-            </View>
-          </Pressable>
-        </View>
-
-        {/* Purchase Button */}
-
-        {user?._id != current_user?._id && (
-          <>
-            {obj.price > 0 && purchase?._id && (
-              <View style={btn_container}>
-                <View
-                  style={{
-                    ...btn_styles,
-                    borderColor: theme_variables.green500
-                  }}
-                >
-                  <Text style={{ ...btn_text, color: theme_variables.green500 }}>Owned</Text>
-                </View>
-              </View>
-            )}
-
-            {obj.price > 0 && !purchase?._id && (
-              <View style={btn_container}>
-                <Pressable onPress={() => purchase_vod()}>
-                  <View
-                    style={{
-                      ...btn_styles,
-                      borderColor: theme_variables.green500
-                    }}
-                  >
-                    <Text style={{ ...btn_text, color: theme_variables.green500 }}>
-                      Purchase ${(obj.price / 100).toFixed(2)}
-                    </Text>
-                  </View>
-                </Pressable>
-              </View>
-            )}
-          </>
-        )}
-
-        {/* Presented By */}
-        <View style={btn_container}>
-          <View
-            style={{
-              ...btn_styles,
-              borderColor: '#ffffff'
-            }}
-          >
-            {user && (
-              <Link href={`/athlete/${user._id}`}>
-                <Text style={btn_text}>
-                  Presented By: {user.profile.firstname} {user.profile.lastname}
-                </Text>
-              </Link>
-            )}
-
-            {!user && obj.credit && <Text style={btn_text}>Presented By: {obj.credit.name}</Text>}
-          </View>
-        </View>
-
-        {/* Description */}
-
-        <ScrollView
-          style={{
-            width: width - theme_variables.gap * 2,
-            maxHeight: 160,
-            marginLeft: theme_variables.gap,
-            marginTop: theme_variables.gap * 2,
-            borderBottomWidth: 2,
-            borderColor: theme_variables.primary
-          }}
-        >
-          {obj?.description && (
-            <Text
+          <View>
+            <View
               style={{
-                color: '#ffffff'
+                marginTop: theme_variables.gap / 2,
+                ...theme_variables.flex,
+                flexDirection: 'row',
+                gap: theme_variables.gap / 2
               }}
             >
-              {obj.description}
-            </Text>
-          )}
-        </ScrollView>
+              <Category obj={obj} />
+              {obj.created_at && (
+                <>
+                  <Text style={details_styles}>•</Text>
+                  <ReleaseDate obj={obj} />
+                </>
+              )}
+
+              {obj.duration && (
+                <>
+                  <Text style={details_styles}>•</Text>
+                  <Duration obj={obj} />
+                </>
+              )}
+            </View>
+          </View>
+
+          <View
+            style={{
+              marginTop: theme_variables.gap,
+              ...theme_variables.flex,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: theme_variables.gap
+            }}
+          >
+            <Avatar />
+            <PresentedBy />
+          </View>
+        </View>
       </View>
-    </>
+
+      <View
+        style={{
+          ...theme_variables.flex,
+          ...theme_variables.padding_horizontal,
+          flexDirection: 'row',
+          gap: theme_variables.gap,
+          marginTop: theme_variables.gap
+        }}
+      >
+        <Rating obj={obj} />
+        {!obj.credit && <Follow />}
+      </View>
+
+      {obj.price > 0 && (
+        <View
+          style={{
+            marginTop: theme_variables.gap,
+            ...theme_variables.padding_horizontal,
+            ...theme_variables.flex_center
+          }}
+        >
+          <PurchaseButton />
+        </View>
+      )}
+
+      {/* Description */}
+      <ScrollView
+        style={{
+          width: width - theme_variables.gap * 2,
+          maxHeight: 160,
+          marginLeft: theme_variables.gap,
+          marginTop: theme_variables.gap
+        }}
+      >
+        <BlurView
+          intensity={5}
+          style={{
+            backgroundColor: 'rgba(255, 255,255, 0.25)',
+            borderRadius: theme_variables.border_radius,
+            overflow: 'hidden',
+            ...theme_variables.padding
+          }}
+        >
+          {obj?.description && <Text style={{ color: '#ffffff' }}>{obj.description}</Text>}
+        </BlurView>
+      </ScrollView>
+    </View>
   );
 }

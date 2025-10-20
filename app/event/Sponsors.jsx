@@ -1,15 +1,11 @@
 import React from 'react';
+import { BlurView } from 'expo-blur';
 import { Link } from 'expo-router';
 import { Dimensions, View, Pressable, Image, Text } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import theme_variables from '../../helpers/theme-variables.js';
 
-export default function Sponsors({
-  sponsors,
-  borderColor = 'transparent',
-  backgroundColor = '#ffffff',
-  color = '#ffffff'
-}) {
+export default function Sponsors({ sponsors, color = '#ffffff' }) {
   const { width } = Dimensions.get('window');
 
   const height = theme_variables.gap * 6;
@@ -44,16 +40,18 @@ export default function Sponsors({
   };
 
   return (
-    <View
+    <BlurView
+      intensity={10}
       style={{
-        width,
+        width: width - theme_variables.gap,
         position: 'absolute',
-        left: 0,
-        bottom: 0,
+        left: theme_variables.gap / 2,
+        bottom: theme_variables.gap,
         zIndex: 2,
-        backgroundColor,
-        borderTopWidth: 2,
-        borderColor
+        borderWidth: 1,
+        borderColor: '#fff',
+        borderRadius: theme_variables.border_radius,
+        backgroundColor: 'rgba(255, 255, 255, 0.25)'
       }}
     >
       <Text
@@ -98,6 +96,6 @@ export default function Sponsors({
           </View>
         )}
       />
-    </View>
+    </BlurView>
   );
 }

@@ -48,6 +48,7 @@
       "expo-router",
       "expo-font",
       "expo-video",
+      "expo-notifications",
       [
         "@daily-co/config-plugin-rn-daily-js",
         {

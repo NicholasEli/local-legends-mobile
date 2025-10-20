@@ -129,8 +129,7 @@ export default function Signup() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: theme_variables.gap,
-        backgroundColor: '#ffffff'
+        padding: theme_variables.gap
       }}
     >
       {signup.type != 'organization' && (
@@ -148,7 +147,7 @@ export default function Signup() {
           </Text>
           <Text
             style={{
-              color: theme_variables.gray900,
+              color: '#fff',
               fontSize: 20,
               fontFamily: theme_variables.gothic,
               textTransform: 'uppercase',
@@ -165,8 +164,8 @@ export default function Signup() {
           <Text
             style={{
               color: theme_variables.primary,
-              fontSize: 30,
               fontFamily: theme_variables.gothic,
+              fontSize: 32,
               textTransform: 'uppercase',
               textAlign: 'center'
             }}
@@ -175,9 +174,8 @@ export default function Signup() {
           </Text>
           <Text
             style={{
-              color: theme_variables.gray900,
-              fontSize: 15,
-              fontFamily: theme_variables.gothic,
+              color: '#fff',
+              fontSize: 10,
               textTransform: 'uppercase',
               textAlign: 'center'
             }}
@@ -186,9 +184,9 @@ export default function Signup() {
           </Text>
           <Text
             style={{
-              color: theme_variables.gray900,
-              fontSize: 15,
-              fontFamily: theme_variables.gothic,
+              marginTop: theme_variables.gap,
+              color: '#fff',
+              fontSize: 10,
               textTransform: 'uppercase',
               textAlign: 'center'
             }}
@@ -205,15 +203,14 @@ export default function Signup() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: '#ffffff'
+            alignItems: 'center'
           }}
         >
           <Text
             style={{
               width: '100%',
               marginTop: theme_variables.gap,
-              color: theme_variables.gray900,
+              color: '#fff',
               fontSize: 15,
               fontFamily: theme_variables.gothic,
               textTransform: 'uppercase',
@@ -290,7 +287,7 @@ export default function Signup() {
 
           if (active)
             return (
-              <Text key={type.id} style={{}}>
+              <Text key={type.id} style={{ color: '#fff' }}>
                 {type.description}
               </Text>
             );
@@ -308,7 +305,7 @@ export default function Signup() {
       >
         <Text
           style={{
-            color: theme_variables.gray900
+            color: '#fff'
           }}
         >
           Already have an account?{' '}
