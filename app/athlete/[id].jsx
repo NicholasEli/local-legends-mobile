@@ -459,7 +459,7 @@ export default function Athlete() {
               marginTop: theme_variables.gap
             }}
           >
-            <Text style={{ fontFamily: 'League-Gothic', color: '#ffffff', fontSize: 40 }}>
+            <Text style={{ fontFamily: theme_variables.gothic, color: '#ffffff', fontSize: 40 }}>
               {firstname} {lastname}
             </Text>
           </View>
@@ -479,7 +479,7 @@ export default function Athlete() {
               <Text
                 style={{
                   textTransform: 'uppercase',
-                  fontFamily: 'League-Gothic',
+                  fontFamily: theme_variables.gothic,
                   color: '#ffffff',
                   fontSize: 20,
                   textAlign: 'center'
@@ -726,7 +726,7 @@ export default function Athlete() {
             <Text
               style={{
                 fontSize: 32,
-                fontFamily: 'League-Gothic',
+                fontFamily: theme_variables.gothic,
                 color: '#ffffff',
                 textTransform: 'uppercase'
               }}
@@ -752,7 +752,7 @@ export default function Athlete() {
                 style={{
                   marginBottom: theme_variables.gap,
                   fontSize: 32,
-                  fontFamily: 'League-Gothic',
+                  fontFamily: theme_variables.gothic,
                   color: '#ffffff',
                   textTransform: 'uppercase'
                 }}
@@ -811,7 +811,7 @@ export default function Athlete() {
                   <Text
                     style={{
                       fontSize: 18,
-                      fontFamily: 'League-Gothic',
+                      fontFamily: theme_variables.gothic,
                       color: '#ffffff',
                       textTransform: 'uppercase'
                     }}

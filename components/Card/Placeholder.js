@@ -12,7 +12,7 @@ export default function PlaceholderCard({ full_width = false }) {
 	const height_ratio = width_ratio * theme_variables.ratio_16_9;
 
 	const text_styles = {
-		fontFamily: 'League-Gothic-Condensed',
+		fontFamily: theme_variables.gothic_condendsed,
 		fontSize: 28,
 		lineHeight: 28,
 		color: '#ffffff',

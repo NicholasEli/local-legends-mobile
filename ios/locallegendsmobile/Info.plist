@@ -27,7 +27,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.anonymous.locallegendsmobile</string>
+				<string>locallegends</string>
 			</array>
 		</dict>
 	</array>
@@ -91,5 +91,11 @@
 	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>LeagueGothic-Regular.otf</string>
+		<string>LeagueGothic-Italic.otf</string>
+		<string>LeagueGothic-CondensedRegular.otf</string>
+	</array>
 </dict>
 </plist>

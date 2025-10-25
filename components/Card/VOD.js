@@ -16,7 +16,7 @@ export default function VODCard({ vod, full_width, owned, color }) {
 	const height_ratio = width_ratio * theme_variables.ratio_16_9;
 
 	const text_styles = {
-		fontFamily: 'League-Gothic',
+		fontFamily: theme_variables.gothic,
 		fontSize: 20,
 		lineHeight: 24,
 		color: color ? color : '#ffffff',

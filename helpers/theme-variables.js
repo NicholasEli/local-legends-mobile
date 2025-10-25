@@ -24,7 +24,7 @@ const theme_variables = {
 	primary: '#c12841',
 	secondary: '#11121e',
 	// font
-	gothic: 'League-Gothic',
+	gothic: 'LeagueGothic-Regular',
 	gothic_italic: 'LeagueGothic-Italic',
 	gothic_condensed: 'League-Gothic-Condensed',
 	//logo

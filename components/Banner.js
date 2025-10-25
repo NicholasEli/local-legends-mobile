@@ -26,7 +26,7 @@ export default function Banner({
 
 	const title_size = 36;
 	const text_styles = {
-		fontFamily: 'League-Gothic',
+		fontFamily: theme_variables.gothic,
 		fontSize: title_size,
 		lineHeight: 36,
 		color: '#ffffff',

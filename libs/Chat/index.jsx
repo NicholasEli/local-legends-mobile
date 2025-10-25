@@ -63,7 +63,10 @@ function Chat({
   }, []);
 
   const messageRenderItem = ({ item }) => {
-    const isSender = item.user._id === user._id;
+    let isSender = false;
+    if (item.user && user && item.user._id === user._id) {
+      isSender = true;
+    }
 
     const background_color = function () {
       if (item.vote) return '#000000';

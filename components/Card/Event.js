@@ -14,7 +14,7 @@ export default function EventCard({ event, full_width = false }) {
 
 	const text_styles = {
 		maxWidth: '90%',
-		fontFamily: 'League-Gothic',
+		fontFamily: theme_variables.gothic,
 		fontSize: 20,
 		lineHeight: 20,
 		color: '#fff',
@@ -22,7 +22,7 @@ export default function EventCard({ event, full_width = false }) {
 	};
 
 	const date_styles = {
-		fontFamily: 'League-Gothic',
+		fontFamily: theme_variables.gothic,
 		textTransform: 'uppercase',
 		textAlign: 'center',
 		color: '#fff'

@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/LeagueGothic-Regular.otf",
+      "sha1": "a1d985718b90ba656fa1dd1d72fd66c989a0c22d"
+    },
+    {
+      "path": "assets/fonts/LeagueGothic-Italic.otf",
+      "sha1": "d58eae9e9898c8aeb4876547e895ebae377c12fb"
+    },
+    {
+      "path": "assets/fonts/LeagueGothic-CondensedRegular.otf",
+      "sha1": "40d0153ec5520469659481652c5aa3f59069da83"
+    }
+  ]
+}
