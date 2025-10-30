@@ -15,9 +15,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "infoPlist": {
-        "UIBackgroundModes": ["voip", "voip"]
-      },
+      "infoPlist": {},
       "bundleIdentifier": "com.anonymous.locallegendsmobile"
     },
     "android": {
