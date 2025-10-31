@@ -6,12 +6,12 @@
 ##### Immediate
 
 - Implement New Standings Algorithm
+- Push Notifications (Subscribe to athlete, event, general) & - Athlete Follow
 
 ##### Backlog
 
 - Return VOD price tags
-- Push Notifications (Subscribe to athlete, event, general) & - Athlete Follow
-- Add Stripe
+- Add iOS Payments
 
 ### Fixes things sometimes
 
