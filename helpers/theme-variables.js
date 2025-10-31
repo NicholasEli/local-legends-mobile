@@ -26,7 +26,7 @@ const theme_variables = {
 	// font
 	gothic: 'LeagueGothic-Regular',
 	gothic_italic: 'LeagueGothic-Italic',
-	gothic_condensed: 'League-Gothic-Condensed',
+	gothic_condensed: 'LeagueGothic-CondensedRegular',
 	//logo
 	logo: 'https://locallegends.live/logo.png',
 	logo_light: 'https://locallegends.live/logo-light.png',

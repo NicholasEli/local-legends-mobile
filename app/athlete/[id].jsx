@@ -401,13 +401,13 @@ export default function Athlete() {
       if (token) {
         const req_account = await auth.user(token);
         if (req_account?._id) {
-          setAccount(req_account);
-          //request_push_notification_permission();
-
-          if (!req_account?.profile?.deactivated) {
+          //if (req_account._id == req_user._id ) request_push_notification_permission();
+          if (req_account._id == req_user._id && !req_user?.profile?.deactivated) {
             req_user.profile.last_login = new Date();
             await await update_user({ user: req_user, token });
           }
+
+          setAccount(req_account);
         }
 
         const req_purchases = await get_purchases({ token });

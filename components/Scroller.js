@@ -34,7 +34,7 @@ export default function Scroller({
 
 	const text_styles = {
 		marginBottom: theme_variables.gap / 2,
-		fontFamily: theme_variables.gothic_condensed,
+		fontFamily: theme_variables.gothic,
 		fontSize: 36,
 		lineHeight: 36,
 		color: '#ffffff',
