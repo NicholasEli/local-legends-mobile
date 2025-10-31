@@ -4,6 +4,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import * as Notifications from 'expo-notifications';
@@ -39,6 +40,7 @@ import { get_athlete_events } from '../../api/events.js';
 import { get_purchases } from '../../api/purchases.js';
 import { update_user } from '../../api/user.js';
 import { set_athlete_follow } from '../../api/athlete.js';
+import dayjs from 'dayjs';
 import SPORTS from '../../types/SPORTS.js';
 import SEX from '../../types/SEX.js';
 import STANCE from '../../types/STANCE.js';
@@ -206,6 +208,12 @@ export default function Athlete() {
     setUser(_user);
   };
 
+  const set_last_login = function () {
+    const _user = EJSON.clone(user);
+    _user.profile.last_login = new Date();
+    setUser(_user);
+  };
+
   const update = async function () {
     setDetailsModal(false);
     setLoading(true);
@@ -281,6 +289,68 @@ export default function Athlete() {
     router.push('/');
   };
 
+  const delete_account = async function () {
+    const token = await get_auth_token();
+    if (!token) return null;
+
+    Alert.alert(
+      'Delete Account',
+      'Your account will be deactivated immediately and permanently deleted after 30 days. You will lose access to your profile, events, and videos on demand. During this time, your account will not be visible to others.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Account',
+          onPress: async () => {
+            const _user = EJSON.clone(user);
+            _user.profile = { ..._user.profile };
+            _user.profile.deactivated = true;
+            _user.profile.last_login = new Date();
+
+            const req = await update_user({ user: _user, token });
+            if (!req || (req && !req._id)) {
+              alert('Error: Profile could not be deleted');
+              return null;
+            }
+
+            setUser(_user);
+            setDetailsModal(false);
+          }
+        }
+      ]
+    );
+  };
+
+  const activate_account = async function () {
+    const token = await get_auth_token();
+    if (!token) return null;
+
+    Alert.alert(
+      'Activate Account',
+      'Activating account will cancel deletion and your profile will become public again.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Activate Account',
+          onPress: async () => {
+            const _user = EJSON.clone(user);
+            _user.profile = { ..._user.profile };
+            _user.profile.deactivated = false;
+            _user.profile.last_login = new Date();
+
+            const req = await update_user({ user: _user, token });
+            if (!req || (req && !req._id)) {
+              alert('Error: Profile could not be activated');
+              return null;
+            }
+
+            setUser(_user);
+            setDetailsModal(false);
+          }
+        }
+      ]
+    );
+  };
+
   const request_push_notification_permission = async () => {
     console.clear();
     const tokenListener = Notifications.addPushTokenListener((token) => {
@@ -333,6 +403,11 @@ export default function Athlete() {
         if (req_account?._id) {
           setAccount(req_account);
           //request_push_notification_permission();
+
+          if (!req_account?.profile?.deactivated) {
+            req_user.profile.last_login = new Date();
+            await await update_user({ user: req_user, token });
+          }
         }
 
         const req_purchases = await get_purchases({ token });
@@ -356,7 +431,8 @@ export default function Athlete() {
 
   let is_user = false;
   if (account && account._id == user._id) is_user = true;
-  const { firstname, lastname, avatar } = user.profile;
+
+  const { firstname, lastname, avatar, deactivated, last_login } = user.profile;
   const { hometown, sport, gender, stance, bio, dob, socials } = user.profile.athlete;
 
   return (
@@ -424,7 +500,7 @@ export default function Athlete() {
               }}
             >
               <Pressable onPress={() => setDetailsModal(true)}>
-                <AntDesign name="edit" size={20} color={theme_variables.yellow500} />
+                <Ionicons name="settings-sharp" size={20} color={theme_variables.yellow500} />
               </Pressable>
             </View>
           )}
@@ -1081,12 +1157,48 @@ export default function Athlete() {
 
             <View
               style={{
-                ...button_styles({ backgroundColor: theme_variables.green300 })
+                display: 'flex',
+                flexDirection: 'column',
+                gap: theme_variables.gap,
+                paddingBottom: theme_variables.gap
               }}
             >
               <Pressable onPress={update}>
-                <Text style={{ ...button_text_styles({}) }}>Save</Text>
+                <View
+                  style={{
+                    ...button_styles({ backgroundColor: theme_variables.green300 })
+                  }}
+                >
+                  <Text style={{ ...button_text_styles({}) }}>Save</Text>
+                </View>
               </Pressable>
+
+              {deactivated && (
+                <Pressable onPress={activate_account}>
+                  <View
+                    style={{
+                      ...button_styles({ backgroundColor: theme_variables.blue700 })
+                    }}
+                  >
+                    <Text style={{ ...button_text_styles({}) }}>Cancel Delete Account</Text>
+                    <Text style={{ ...button_text_styles({}), fontSize: 14 }}>
+                      Deletion Final On {dayjs(last_login).add(30, 'day').format('MM-DD-YYYY')}
+                    </Text>
+                  </View>
+                </Pressable>
+              )}
+
+              {!deactivated && (
+                <Pressable onPress={delete_account}>
+                  <View
+                    style={{
+                      ...button_styles({ backgroundColor: theme_variables.red500 })
+                    }}
+                  >
+                    <Text style={{ ...button_text_styles({}) }}>Delete Account</Text>
+                  </View>
+                </Pressable>
+              )}
             </View>
           </ScrollView>
         </View>
