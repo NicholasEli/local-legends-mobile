@@ -1,11 +1,11 @@
 ### Todo
 
+- Put back test assets on users
+- Create and deploy new bundle
+
 ##### Immediate
 
-- Auth screen - update UI
-- Event heat complete
-- Event Standing - Loading Screen
-- App Store Assets
+- Implement New Standings Algorithm
 
 ##### Backlog
 
